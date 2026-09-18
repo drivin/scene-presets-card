@@ -21,7 +21,7 @@
   ],
   "devDependencies": {
     "playwright": "1.63.0",
-    "esbuild": "0.25.5"
+    "esbuild": "0.28.2"
   },
   "license": "Apache-2.0"
 }
