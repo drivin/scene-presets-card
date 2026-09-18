@@ -157,9 +157,10 @@ export class ScenePresetsCard extends HTMLElement {
     const categories = this.data ? availableCategories(this.data, this.config.filter) : [];
     if (this.data && this.runtime.category && !categories.some(c => c.id === this.runtime.category)) this.runtime.category = '';
     const card = el('ha-card');
-    const header = el('div', {class: 'toolbar'}, [el('h2', {text: this.config.title || 'Scene Presets'})]);
+    const header = el('div', {class: 'toolbar'});
+    if (this.config.display.show_title) header.append(el('h2', {text: this.config.title || 'Scene Presets'}));
     if (this.config.display.show_refresh) header.append(button('↻', () => this.refresh(), {'aria-label': this.t('card.refresh'), title: this.t('card.refresh_help'), disabled: !this.provider}));
-    card.append(header);
+    if (header.childElementCount) card.append(header);
     card.append(el('div', {id: 'notices', role: 'status', 'aria-live': 'polite'}), el('div', {id: 'controls'}));
     const filters = el('div', {class: 'toolbar'});
     if (this.config.display.search) filters.append(el('input', {type: 'search', placeholder: this.t('card.search_placeholder'), 'aria-label': this.t('card.search'), value: this.runtime.search || '', oninput: e => {

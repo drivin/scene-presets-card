@@ -30,11 +30,12 @@ export function normalizeConfig(input) {
   if (!['user','global'].includes(favorites.mode)) throw new LocalizedError('error.favorites_mode');
   if (typeof favorites.namespace !== 'string' || !favorites.namespace.trim()) throw new LocalizedError('error.namespace');
   if (input.remember?.controls && (typeof input.storage_key !== 'string' || !input.storage_key.trim())) throw new LocalizedError('error.storage_key');
-  const display = {columns: 3, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display};
-  for (const key of ['center_titles', 'group_by_category', 'show_refresh']) {
+  const controls = {brightness_input: 'number', ...input.controls};
+  if (!['number','slider'].includes(controls.brightness_input)) throw new LocalizedError('error.brightness_input');
+  const display = {columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display};
+  for (const key of ['show_title', 'center_titles', 'group_by_category', 'show_refresh']) {
     if (typeof display[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: `display.${key}`});
   }
   numberIn(display.columns, 1, 12, 'display.columns');
-  return {...input, targets: {entity_id: entityIds}, filter, scene: normalizeScene(input.scene),
-    controls: {...input.controls}, favorites, display};
+  return {...input, targets: {entity_id: entityIds}, filter, scene: normalizeScene(input.scene), controls, favorites, display};
 }

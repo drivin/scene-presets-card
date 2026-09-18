@@ -119,21 +119,24 @@ export class ScenePresetsEditor extends HTMLElement {
     let scene;
     try { scene = normalizeScene(c.scene); } catch { scene = normalizeScene(); }
     root.append(this.section('scene', this.t('editor.scene'), this.t('editor.scene_help'), [
-      runtimeControls(scene, {mode:true,shuffle:true,smart_shuffle:true,brightness:true,transition:true,interval:true}, {normalScenes:true,dynamicScenes:true}, value => {
+      runtimeControls(scene, {mode:true,shuffle:true,smart_shuffle:true,brightness:true,brightness_input:c.controls?.brightness_input || 'number',transition:true,interval:true}, {normalScenes:true,dynamicScenes:true}, value => {
         this.commit({...this.config, scene: {...this.config.scene, ...value, transition: value.mode === 'dynamic' ? value.dynamic_transition : value.transition}});
       }, this.t),
     ]));
     root.append(this.section('display', this.t('editor.display'), this.t('editor.display_help'), [
       this.text(this.t('editor.title'), 'title', c.title), field(this.t('editor.columns'), el('input', {type:'number', min:1, max:12, value:c.display?.columns ?? 3,
         onchange:e => { if (e.target.reportValidity()) this.change('display.columns', Number(e.target.value)); }})),
-      ...Object.entries({show_name:this.t('editor.show_name'),center_titles:this.t('editor.center_titles'),group_by_category:this.t('editor.group_by_category'),show_category:this.t('editor.show_category'),show_refresh:this.t('editor.show_refresh'),search:this.t('editor.show_search'),category_selector:this.t('editor.category_selector'),favorites:this.t('editor.show_favorites'),active_scene:this.t('editor.active_scene')})
-        .map(([key,label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ['show_name','favorites','show_refresh'].includes(key))),
+      ...Object.entries({show_title:this.t('editor.show_title'),show_name:this.t('editor.show_name'),center_titles:this.t('editor.center_titles'),group_by_category:this.t('editor.group_by_category'),show_category:this.t('editor.show_category'),show_refresh:this.t('editor.show_refresh'),search:this.t('editor.show_search'),category_selector:this.t('editor.category_selector'),favorites:this.t('editor.show_favorites'),active_scene:this.t('editor.active_scene')})
+        .map(([key,label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ['show_title','show_name','favorites','show_refresh'].includes(key))),
       el('p', {class: 'help', text: this.t('editor.refresh_help')}),
     ]));
     root.append(el('h3', {class: 'group-title', text: this.t('editor.optional')}));
-    root.append(this.section('controls', this.t('editor.controls'), this.t('editor.controls_help'),
-      Object.entries({mode:this.t('editor.control_mode'),shuffle:this.t('editor.control_shuffle'),smart_shuffle:this.t('editor.control_smart_shuffle'),brightness:this.t('editor.control_brightness'),transition:this.t('editor.control_transition'),interval:this.t('editor.control_interval')})
-        .map(([key,label]) => this.check(label, `controls.${key}`, c.controls?.[key]))));
+    const controlFields = Object.entries({mode:this.t('editor.control_mode'),shuffle:this.t('editor.control_shuffle'),smart_shuffle:this.t('editor.control_smart_shuffle'),brightness:this.t('editor.control_brightness'),transition:this.t('editor.control_transition'),interval:this.t('editor.control_interval')})
+      .map(([key,label]) => this.check(label, `controls.${key}`, c.controls?.[key]));
+    if (c.controls?.brightness) controlFields.push(this.select(this.t('editor.brightness_input'), 'controls.brightness_input', c.controls?.brightness_input || 'number', [
+      ['number',this.t('editor.input_number')], ['slider',this.t('editor.input_slider')],
+    ]));
+    root.append(this.section('controls', this.t('editor.controls'), this.t('editor.controls_help'), controlFields));
     root.append(this.section('favorites', this.t('common.favorites'), this.t('editor.favorites_help'), [
       this.check(this.t('editor.favorites_enabled'), 'favorites.enabled', c.favorites?.enabled),
       ...(c.favorites?.enabled ? [

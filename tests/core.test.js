@@ -13,8 +13,11 @@ const raw = {categories:[{id:'a',name:'Relax'},{id:'b',name:'Party'}],presets:[{
 const fake = (data = raw) => new ScenePresetsAdapter({services:{scene_presets:{apply_preset:{},start_dynamic_scene:{},stop_dynamic_scene:{}}}}, async () => ({ok:true,json:async()=>structuredClone(data)}));
 test('minimal config, target groups and validation', () => {
   assert.equal(normalizeConfig({targets:target}).scene.mode,'normal');
+  assert.equal(normalizeConfig({targets:target}).display.show_title,true);
+  assert.equal(normalizeConfig({targets:target}).controls.brightness_input,'number');
+  assert.equal(normalizeConfig({targets:target,controls:{brightness_input:'slider'}}).controls.brightness_input,'slider');
   assert.deepEqual(normalizeConfig({targets:{entity_id:'group.lights'}}).targets.entity_id,['group.lights']);
-  for (const config of [{targets:{entity_id:[]}}, {targets:{entity_id:['switch.x']}}, {targets:target,filter:{mode:'both'}}, {targets:target,remember:{controls:true}}, {targets:target,scene:{brightness:{override:true,value:0}}}]) assert.throws(()=>normalizeConfig(config));
+  for (const config of [{targets:{entity_id:[]}}, {targets:{entity_id:['switch.x']}}, {targets:target,filter:{mode:'both'}}, {targets:target,remember:{controls:true}}, {targets:target,controls:{brightness_input:'dial'}}, {targets:target,display:{show_title:'yes'}}, {targets:target,scene:{brightness:{override:true,value:0}}}]) assert.throws(()=>normalizeConfig(config));
 });
 test('exact normal payload and override omission', () => {
   const adapter = fake();

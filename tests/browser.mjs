@@ -42,6 +42,19 @@ try {
   assert.equal(await card.locator('.tile').count(),2);
   assert.equal(await card.locator('.name').first().evaluate(node=>getComputedStyle(node).textAlign),'left');
   assert.equal(await card.locator('.preset-group').count(),0);
+  assert.equal(await card.locator('.toolbar h2').count(),1);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,display:{...config.display,show_title:false}}));
+  assert.equal(await card.locator('.toolbar h2').count(),0);
+  assert.equal(await card.getByRole('button',{name:'Presets und Status aktualisieren'}).count(),1);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig(config));
+  const brightnessNumber=card.getByRole('spinbutton',{name:'Helligkeit (1–255)',exact:true});
+  assert.equal(await brightnessNumber.isDisabled(),true);
+  assert.equal(await card.getByRole('slider').count(),0);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,controls:{...config.controls,brightness_input:'slider'}}));
+  const brightnessSlider=card.getByRole('slider',{name:'Schieberegler für Helligkeit (1–255)',exact:true});
+  assert.equal(await brightnessSlider.isDisabled(),true);
+  assert.equal(await card.getByRole('spinbutton',{name:'Helligkeit (1–255)',exact:true}).count(),0);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig(config));
   await card.getByRole('button',{name:'Sunset anwenden',exact:true}).click();
   assert.equal(await page.evaluate(()=>calls[0][1]),'apply_preset');
   await card.getByRole('button',{name:'Sunset: Favorit umschalten'}).click();
@@ -100,6 +113,13 @@ try {
   await editor.getByLabel('Titel',{exact:true}).press('Tab');
   assert.deepEqual(await page.evaluate(()=>[edited.unknown.keep,edited.preset_card.custom_property_xyz,edited.title]),[42,7,'Edited']);
   assert.equal(await editor.locator('ha-selector').count(),1);
+  await editor.getByRole('checkbox',{name:'Titel anzeigen',exact:true}).uncheck();
+  assert.equal(await page.evaluate(()=>edited.display.show_title),false);
+  await editor.locator('details[data-section="controls"] > summary').click();
+  await editor.getByLabel('Helligkeitseingabe',{exact:true}).selectOption('slider');
+  assert.equal(await page.evaluate(()=>edited.controls.brightness_input),'slider');
+  await editor.locator('details[data-section="scene"] > summary').click();
+  assert.equal(await editor.getByRole('slider',{name:'Schieberegler für Helligkeit (1–255)',exact:true}).count(),1);
 
   // A selection edit preserves the expanded section and the user's search.
   assert.equal(await editor.locator('details[data-section="targets"]').getAttribute('open'),'');

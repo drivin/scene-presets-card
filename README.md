@@ -1,6 +1,6 @@
 # Scene Presets Card
 
-> ☕ **Like this card? [Support its development on Buy Me a Coffee.](https://buymeacoffee.com/drivin)**
+[![Buy Me a Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/drivin)
 
 A Home Assistant dashboard card for [Scene Presets](https://github.com/Hypfer/hass-scene_presets). Choose your lights once and browse, filter and apply presets without duplicating entity IDs or action configurations for every scene.
 
@@ -96,6 +96,7 @@ controls:
   shuffle: true
   smart_shuffle: true
   brightness: true
+  brightness_input: slider
   transition: true
   interval: true
 favorites:
@@ -107,6 +108,7 @@ remember:
 storage_key: living-room-scenes
 display:
   columns: 3
+  show_title: true
   show_name: true
   center_titles: true
   group_by_category: true
@@ -133,6 +135,8 @@ Search, favorites and category navigation operate within this selection. The cat
 
 For normal scenes, `brightness.override` and `transition.override` control whether the card sends those values. Brightness uses **1–255**, not percentages. Set an override to `false` to leave that value to the integration.
 
+When the dashboard brightness control is enabled, `controls.brightness_input` selects either the existing `number` field (default) or a `slider`. The visual editor exposes this choice under **Dashboard controls**.
+
 For dynamic scenes, use intervals and transitions in seconds:
 
 ```yaml
@@ -148,6 +152,7 @@ Shuffle, Smart Shuffle, target resolution and conflicts between running dynamic 
 
 | Option | Default | Purpose |
 | --- | --- | --- |
+| `display.show_title` | `true` | Show the card title |
 | `display.center_titles` | `false` | Center scene titles in the built-in renderer |
 | `display.group_by_category` | `false` | Separate visible presets with category headings |
 | `display.show_category` | `false` | Also show the category name on each tile |

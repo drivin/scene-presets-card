@@ -214,6 +214,7 @@ var en_default = {
   "common.shuffle": "Shuffle",
   "common.smart_shuffle": "Smart Shuffle",
   "common.brightness": "Brightness (1\u2013255)",
+  "common.slider": "{label} slider",
   "common.transition": "Transition (s)",
   "common.interval": "Interval (s)",
   "common.override": "Override {label}",
@@ -263,6 +264,7 @@ var en_default = {
   "editor.display": "4 \xB7 Appearance",
   "editor.display_help": "Choose which information and search options appear on the dashboard.",
   "editor.title": "Title",
+  "editor.show_title": "Show title",
   "editor.columns": "Columns",
   "editor.show_name": "Show preset names",
   "editor.center_titles": "Center scene titles",
@@ -281,6 +283,9 @@ var en_default = {
   "editor.control_shuffle": "Shuffle colors",
   "editor.control_smart_shuffle": "Smooth color changes (Smart Shuffle)",
   "editor.control_brightness": "Override brightness",
+  "editor.brightness_input": "Brightness input",
+  "editor.input_number": "Number field",
+  "editor.input_slider": "Slider",
   "editor.control_transition": "Adjust transition time",
   "editor.control_interval": "Adjust dynamic interval",
   "editor.favorites_help": "Favorites can be saved per user or shared by all users.",
@@ -323,6 +328,7 @@ var en_default = {
   "error.unknown": "Unknown error.",
   "error.scene_mode": "scene.mode must be normal or dynamic.",
   "error.boolean": "{name}: a boolean is required.",
+  "error.brightness_input": "controls.brightness_input must be number or slider.",
   "error.config": "Configuration is missing.",
   "error.targets": "At least one valid light.* or group.* target is required.",
   "error.target_type": "Only targets.entity_id is supported.",
@@ -365,6 +371,7 @@ var de_default = {
   "common.shuffle": "Shuffle",
   "common.smart_shuffle": "Smart Shuffle",
   "common.brightness": "Helligkeit (1\u2013255)",
+  "common.slider": "Schieberegler f\xFCr {label}",
   "common.transition": "\xDCbergang (s)",
   "common.interval": "Intervall (s)",
   "common.override": "{label} \xFCberschreiben",
@@ -414,6 +421,7 @@ var de_default = {
   "editor.display": "4 \xB7 Darstellung",
   "editor.display_help": "Lege fest, welche Informationen und Suchm\xF6glichkeiten im Dashboard erscheinen.",
   "editor.title": "Titel",
+  "editor.show_title": "Titel anzeigen",
   "editor.columns": "Spalten",
   "editor.show_name": "Presetnamen anzeigen",
   "editor.center_titles": "Szenentitel zentrieren",
@@ -432,6 +440,9 @@ var de_default = {
   "editor.control_shuffle": "Farben mischen (Shuffle)",
   "editor.control_smart_shuffle": "Sanfte Farbwechsel (Smart Shuffle)",
   "editor.control_brightness": "Helligkeit \xFCberschreiben",
+  "editor.brightness_input": "Helligkeitseingabe",
+  "editor.input_number": "Zahlenfeld",
+  "editor.input_slider": "Schieberegler",
   "editor.control_transition": "\xDCbergangszeit einstellen",
   "editor.control_interval": "Dynamic-Intervall einstellen",
   "editor.favorites_help": "Favoriten k\xF6nnen pro Benutzer oder gemeinsam f\xFCr alle Benutzer gespeichert werden.",
@@ -474,6 +485,7 @@ var de_default = {
   "error.unknown": "Unbekannter Fehler.",
   "error.scene_mode": "scene.mode: normal oder dynamic erforderlich.",
   "error.boolean": "{name}: Boolean erforderlich.",
+  "error.brightness_input": "controls.brightness_input muss number oder slider sein.",
   "error.config": "Konfiguration fehlt.",
   "error.targets": "Mindestens ein g\xFCltiges light.* oder group.* Target erforderlich.",
   "error.target_type": "V1 unterst\xFCtzt ausschlie\xDFlich targets.entity_id.",
@@ -516,6 +528,7 @@ var nl_default = {
   "common.shuffle": "Willekeurig",
   "common.smart_shuffle": "Slim willekeurig",
   "common.brightness": "Helderheid (1\u2013255)",
+  "common.slider": "Schuifregelaar voor {label}",
   "common.transition": "Overgang (s)",
   "common.interval": "Interval (s)",
   "common.override": "{label} overschrijven",
@@ -565,6 +578,7 @@ var nl_default = {
   "editor.display": "4 \xB7 Weergave",
   "editor.display_help": "Kies welke informatie en zoekopties op het dashboard verschijnen.",
   "editor.title": "Titel",
+  "editor.show_title": "Titel tonen",
   "editor.columns": "Kolommen",
   "editor.show_name": "Presetnamen tonen",
   "editor.center_titles": "Sc\xE8netitels centreren",
@@ -583,6 +597,9 @@ var nl_default = {
   "editor.control_shuffle": "Kleuren mengen",
   "editor.control_smart_shuffle": "Vloeiende kleurwisselingen (Smart Shuffle)",
   "editor.control_brightness": "Helderheid overschrijven",
+  "editor.brightness_input": "Helderheidsinvoer",
+  "editor.input_number": "Getalveld",
+  "editor.input_slider": "Schuifregelaar",
   "editor.control_transition": "Overgangstijd instellen",
   "editor.control_interval": "Dynamisch interval instellen",
   "editor.favorites_help": "Favorieten kunnen per gebruiker worden opgeslagen of met alle gebruikers worden gedeeld.",
@@ -625,6 +642,7 @@ var nl_default = {
   "error.unknown": "Onbekende fout.",
   "error.scene_mode": "scene.mode moet normal of dynamic zijn.",
   "error.boolean": "{name}: een booleaanse waarde is vereist.",
+  "error.brightness_input": "controls.brightness_input moet number of slider zijn.",
   "error.config": "Configuratie ontbreekt.",
   "error.targets": "Minimaal \xE9\xE9n geldig light.*- of group.*-doel is vereist.",
   "error.target_type": "Alleen targets.entity_id wordt ondersteund.",
@@ -667,6 +685,7 @@ var fr_default = {
   "common.shuffle": "Al\xE9atoire",
   "common.smart_shuffle": "Al\xE9atoire intelligent",
   "common.brightness": "Luminosit\xE9 (1\u2013255)",
+  "common.slider": "Curseur pour {label}",
   "common.transition": "Transition (s)",
   "common.interval": "Intervalle (s)",
   "common.override": "Remplacer : {label}",
@@ -716,6 +735,7 @@ var fr_default = {
   "editor.display": "4 \xB7 Apparence",
   "editor.display_help": "Choisissez les informations et les options de recherche \xE0 afficher sur le tableau de bord.",
   "editor.title": "Titre",
+  "editor.show_title": "Afficher le titre",
   "editor.columns": "Colonnes",
   "editor.show_name": "Afficher les noms des pr\xE9r\xE9glages",
   "editor.center_titles": "Centrer les titres des sc\xE8nes",
@@ -734,6 +754,9 @@ var fr_default = {
   "editor.control_shuffle": "M\xE9langer les couleurs",
   "editor.control_smart_shuffle": "Transitions de couleurs douces (Smart Shuffle)",
   "editor.control_brightness": "Remplacer la luminosit\xE9",
+  "editor.brightness_input": "Saisie de la luminosit\xE9",
+  "editor.input_number": "Champ num\xE9rique",
+  "editor.input_slider": "Curseur",
   "editor.control_transition": "R\xE9gler la dur\xE9e de transition",
   "editor.control_interval": "R\xE9gler l\u2019intervalle dynamique",
   "editor.favorites_help": "Les favoris peuvent \xEAtre enregistr\xE9s par utilisateur ou partag\xE9s entre tous les utilisateurs.",
@@ -776,6 +799,7 @@ var fr_default = {
   "error.unknown": "Erreur inconnue.",
   "error.scene_mode": "scene.mode doit \xEAtre normal ou dynamic.",
   "error.boolean": "{name} : une valeur bool\xE9enne est requise.",
+  "error.brightness_input": "controls.brightness_input doit valoir number ou slider.",
   "error.config": "Configuration manquante.",
   "error.targets": "Au moins une cible light.* ou group.* valide est requise.",
   "error.target_type": "Seul targets.entity_id est pris en charge.",
@@ -968,20 +992,14 @@ function normalizeConfig(input) {
   if (!["user", "global"].includes(favorites.mode)) throw new LocalizedError("error.favorites_mode");
   if (typeof favorites.namespace !== "string" || !favorites.namespace.trim()) throw new LocalizedError("error.namespace");
   if (input.remember?.controls && (typeof input.storage_key !== "string" || !input.storage_key.trim())) throw new LocalizedError("error.storage_key");
-  const display = { columns: 3, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display };
-  for (const key of ["center_titles", "group_by_category", "show_refresh"]) {
+  const controls = { brightness_input: "number", ...input.controls };
+  if (!["number", "slider"].includes(controls.brightness_input)) throw new LocalizedError("error.brightness_input");
+  const display = { columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display };
+  for (const key of ["show_title", "center_titles", "group_by_category", "show_refresh"]) {
     if (typeof display[key] !== "boolean") throw new LocalizedError("error.boolean", { name: `display.${key}` });
   }
   numberIn(display.columns, 1, 12, "display.columns");
-  return {
-    ...input,
-    targets: { entity_id: entityIds },
-    filter,
-    scene: normalizeScene(input.scene),
-    controls: { ...input.controls },
-    favorites,
-    display
-  };
+  return { ...input, targets: { entity_id: entityIds }, filter, scene: normalizeScene(input.scene), controls, favorites, display };
 }
 
 // src/adapters/scene-presets-adapter.js
@@ -1321,7 +1339,7 @@ function button(text, onClick, options = {}) {
   return el("button", { type: "button", text, onclick: onClick, ...options });
 }
 function field(label, input) {
-  input.setAttribute("aria-label", label);
+  if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", label);
   return el("label", {}, [el("span", { text: label }), input]);
 }
 var styles = `
@@ -1330,7 +1348,7 @@ var styles = `
   button,input,select{font:inherit;color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:8px;background:var(--card-background-color,#fff);padding:8px}
   button{cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--primary-color,#03a9f4)}
   .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.toolbar h2{flex:1}
-  label{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:8px 0}input[type=number]{width:90px}
+  label{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:8px 0}input[type=number]{width:90px}.range-control{display:flex;align-items:center;gap:8px;width:min(260px,60%)}.range-control input{flex:1;min-width:70px;padding:0;border:0;background:transparent}.range-control output{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
   .notice{white-space:pre-wrap;font-size:13px;color:var(--secondary-text-color,#666);margin:8px 0}.error{color:var(--error-color,#db4437)}
   .grid{display:grid;grid-template-columns:repeat(var(--columns,3),minmax(0,1fr));gap:10px}
   .tile{position:relative;min-width:0;border-radius:12px;overflow:hidden;border:2px solid transparent;background:var(--secondary-background-color,#eee)}
@@ -1360,6 +1378,23 @@ function runtimeControls(scene, controls, capabilities, changed, t = localize())
       if (e.target.reportValidity()) callback(Number(e.target.value));
     }
   }));
+  const slider = (label, value, min, max, callback, disabled = false) => {
+    const output = el("output", { text: value });
+    const input = el("input", {
+      type: "range",
+      value,
+      min,
+      max,
+      step: 1,
+      disabled,
+      "aria-label": t("common.slider", { label }),
+      oninput: (e) => {
+        output.value = e.target.value;
+      },
+      onchange: (e) => callback(Number(e.target.value))
+    });
+    return el("label", {}, [el("span", { text: label }), el("span", { class: "range-control" }, [input, output])]);
+  };
   if (controls.mode) root.append(field(t("common.mode"), el("select", { value: scene.mode, onchange: (e) => update("mode", e.target.value) }, [
     el("option", { value: "normal", text: t("common.normal"), selected: scene.mode === "normal", disabled: !capabilities.normalScenes }),
     el("option", { value: "dynamic", text: t("common.dynamic"), selected: scene.mode === "dynamic", disabled: !capabilities.dynamicScenes })
@@ -1370,7 +1405,7 @@ function runtimeControls(scene, controls, capabilities, changed, t = localize())
       if (!controls[key]) continue;
       root.append(
         check(t("common.override", { label }), scene[key].override, (override) => update(key, { ...scene[key], override })),
-        number(label, scene[key].value, min, max, (value) => update(key, { ...scene[key], value }), !scene[key].override)
+        key === "brightness" && controls.brightness_input === "slider" ? slider(label, scene[key].value, min, max, (value) => update(key, { ...scene[key], value }), !scene[key].override) : number(label, scene[key].value, min, max, (value) => update(key, { ...scene[key], value }), !scene[key].override)
       );
     }
   } else {
@@ -1735,9 +1770,10 @@ var ScenePresetsCard = class extends HTMLElement {
     const categories = this.data ? availableCategories(this.data, this.config.filter) : [];
     if (this.data && this.runtime.category && !categories.some((c) => c.id === this.runtime.category)) this.runtime.category = "";
     const card = el("ha-card");
-    const header = el("div", { class: "toolbar" }, [el("h2", { text: this.config.title || "Scene Presets" })]);
+    const header = el("div", { class: "toolbar" });
+    if (this.config.display.show_title) header.append(el("h2", { text: this.config.title || "Scene Presets" }));
     if (this.config.display.show_refresh) header.append(button("\u21BB", () => this.refresh(), { "aria-label": this.t("card.refresh"), title: this.t("card.refresh_help"), disabled: !this.provider }));
-    card.append(header);
+    if (header.childElementCount) card.append(header);
     card.append(el("div", { id: "notices", role: "status", "aria-live": "polite" }), el("div", { id: "controls" }));
     const filters = el("div", { class: "toolbar" });
     if (this.config.display.search) filters.append(el("input", { type: "search", placeholder: this.t("card.search_placeholder"), "aria-label": this.t("card.search"), value: this.runtime.search || "", oninput: (e) => {
@@ -1935,7 +1971,7 @@ var ScenePresetsEditor = class extends HTMLElement {
       scene = normalizeScene();
     }
     root.append(this.section("scene", this.t("editor.scene"), this.t("editor.scene_help"), [
-      runtimeControls(scene, { mode: true, shuffle: true, smart_shuffle: true, brightness: true, transition: true, interval: true }, { normalScenes: true, dynamicScenes: true }, (value) => {
+      runtimeControls(scene, { mode: true, shuffle: true, smart_shuffle: true, brightness: true, brightness_input: c.controls?.brightness_input || "number", transition: true, interval: true }, { normalScenes: true, dynamicScenes: true }, (value) => {
         this.commit({ ...this.config, scene: { ...this.config.scene, ...value, transition: value.mode === "dynamic" ? value.dynamic_transition : value.transition } });
       }, this.t)
     ]));
@@ -1950,16 +1986,16 @@ var ScenePresetsEditor = class extends HTMLElement {
           if (e.target.reportValidity()) this.change("display.columns", Number(e.target.value));
         }
       })),
-      ...Object.entries({ show_name: this.t("editor.show_name"), center_titles: this.t("editor.center_titles"), group_by_category: this.t("editor.group_by_category"), show_category: this.t("editor.show_category"), show_refresh: this.t("editor.show_refresh"), search: this.t("editor.show_search"), category_selector: this.t("editor.category_selector"), favorites: this.t("editor.show_favorites"), active_scene: this.t("editor.active_scene") }).map(([key, label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ["show_name", "favorites", "show_refresh"].includes(key))),
+      ...Object.entries({ show_title: this.t("editor.show_title"), show_name: this.t("editor.show_name"), center_titles: this.t("editor.center_titles"), group_by_category: this.t("editor.group_by_category"), show_category: this.t("editor.show_category"), show_refresh: this.t("editor.show_refresh"), search: this.t("editor.show_search"), category_selector: this.t("editor.category_selector"), favorites: this.t("editor.show_favorites"), active_scene: this.t("editor.active_scene") }).map(([key, label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ["show_title", "show_name", "favorites", "show_refresh"].includes(key))),
       el("p", { class: "help", text: this.t("editor.refresh_help") })
     ]));
     root.append(el("h3", { class: "group-title", text: this.t("editor.optional") }));
-    root.append(this.section(
-      "controls",
-      this.t("editor.controls"),
-      this.t("editor.controls_help"),
-      Object.entries({ mode: this.t("editor.control_mode"), shuffle: this.t("editor.control_shuffle"), smart_shuffle: this.t("editor.control_smart_shuffle"), brightness: this.t("editor.control_brightness"), transition: this.t("editor.control_transition"), interval: this.t("editor.control_interval") }).map(([key, label]) => this.check(label, `controls.${key}`, c.controls?.[key]))
-    ));
+    const controlFields = Object.entries({ mode: this.t("editor.control_mode"), shuffle: this.t("editor.control_shuffle"), smart_shuffle: this.t("editor.control_smart_shuffle"), brightness: this.t("editor.control_brightness"), transition: this.t("editor.control_transition"), interval: this.t("editor.control_interval") }).map(([key, label]) => this.check(label, `controls.${key}`, c.controls?.[key]));
+    if (c.controls?.brightness) controlFields.push(this.select(this.t("editor.brightness_input"), "controls.brightness_input", c.controls?.brightness_input || "number", [
+      ["number", this.t("editor.input_number")],
+      ["slider", this.t("editor.input_slider")]
+    ]));
+    root.append(this.section("controls", this.t("editor.controls"), this.t("editor.controls_help"), controlFields));
     root.append(this.section("favorites", this.t("common.favorites"), this.t("editor.favorites_help"), [
       this.check(this.t("editor.favorites_enabled"), "favorites.enabled", c.favorites?.enabled),
       ...c.favorites?.enabled ? [

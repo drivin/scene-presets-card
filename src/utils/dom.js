@@ -10,14 +10,14 @@ export function el(tag, options = {}, children = []) {
   node.append(...children); return node;
 }
 export function button(text, onClick, options = {}) { return el('button', {type: 'button', text, onclick: onClick, ...options}); }
-export function field(label, input) { input.setAttribute('aria-label', label); return el('label', {}, [el('span', {text: label}), input]); }
+export function field(label, input) { if (!input.hasAttribute('aria-label')) input.setAttribute('aria-label', label); return el('label', {}, [el('span', {text: label}), input]); }
 export const styles = `
   :host{display:block;color:var(--primary-text-color,#222);font-family:var(--paper-font-body1_-_font-family,system-ui)}
   *{box-sizing:border-box}ha-card{display:block;padding:16px}h2{font-size:20px;margin:0}h3{font-size:16px}
   button,input,select{font:inherit;color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:8px;background:var(--card-background-color,#fff);padding:8px}
   button{cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--primary-color,#03a9f4)}
   .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.toolbar h2{flex:1}
-  label{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:8px 0}input[type=number]{width:90px}
+  label{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:8px 0}input[type=number]{width:90px}.range-control{display:flex;align-items:center;gap:8px;width:min(260px,60%)}.range-control input{flex:1;min-width:70px;padding:0;border:0;background:transparent}.range-control output{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
   .notice{white-space:pre-wrap;font-size:13px;color:var(--secondary-text-color,#666);margin:8px 0}.error{color:var(--error-color,#db4437)}
   .grid{display:grid;grid-template-columns:repeat(var(--columns,3),minmax(0,1fr));gap:10px}
   .tile{position:relative;min-width:0;border-radius:12px;overflow:hidden;border:2px solid transparent;background:var(--secondary-background-color,#eee)}
