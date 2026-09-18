@@ -812,7 +812,7 @@ var fr_default = {
 
 // src/adapters/ha-localization-adapter.js
 function haLanguage(hass) {
-  return hass?.locale?.language || hass?.language || "en";
+  return hass?.language || hass?.locale?.language || "en";
 }
 
 // src/localize/localize.js

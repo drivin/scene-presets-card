@@ -16,14 +16,15 @@ test('all language catalogs have complete keys and matching named placeholders',
     }
   }
 });
-test('HA profile language, legacy language and regional variants with English fallback', () => {
+test('HA effective language, locale fallback and regional variants with English fallback', () => {
   for (const language of [undefined, '', 'es', 'constructor', '__proto__']) assert.equal(resolveLanguage(language), 'en');
   assert.equal(localize()('common.category'), 'Category');
   assert.equal(forLanguage('de-DE')('common.category'), 'Kategorie');
   assert.equal(forLanguage('nl_BE')('common.category'), 'Categorie');
   assert.equal(forLanguage('FR-ca')('common.category'), 'Catégorie');
   assert.equal(localize({language:'de'})('common.category'), 'Kategorie');
-  assert.equal(localize({locale:{language:'fr'},language:'de'})('common.category'), 'Catégorie');
+  assert.equal(localize({locale:{language:'fr'},language:'de'})('common.category'), 'Kategorie');
+  assert.equal(localize({locale:{language:'de'},language:'en-US'})('editor.intro'), 'Choose lights once, select presets and configure scene behavior.');
   const english = languages.nl['card.empty'];
   try { delete languages.nl['card.empty']; assert.equal(forLanguage('nl')('card.empty'), languages.en['card.empty']); }
   finally { languages.nl['card.empty'] = english; }
