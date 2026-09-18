@@ -18,6 +18,12 @@ A Home Assistant dashboard card for [Scene Presets](https://github.com/Hypfer/ha
 
 The card delegates lighting behavior to Scene Presets. It does not run its own scene engine.
 
+## Preview
+
+![Scene Presets Card dashboard preview](tests/browser-preview.png)
+
+![Scene Presets Card visual editor](tests/editor-preview.png)
+
 ## Installation
 
 ### Prerequisite
