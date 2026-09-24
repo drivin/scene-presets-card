@@ -1,0 +1,45 @@
+{
+  "categories": [
+    {"id": "cozy", "name": "Cozy"},
+    {"id": "party-vibes", "name": "Party vibes"},
+    {"id": "serenity", "name": "Serenity"}
+  ],
+  "presets": [
+    {
+      "id": "ea580cb0-149e-48e6-a729-2a500edfb924",
+      "name": "Savanna sunset",
+      "categoryId": "cozy",
+      "img": "ea580cb0-149e-48e6-a729-2a500edfb924.jpeg"
+    },
+    {
+      "id": "89c16361-391d-4346-b6d8-ac1eaf4de3dc",
+      "name": "Golden pond",
+      "categoryId": "cozy",
+      "img": "89c16361-391d-4346-b6d8-ac1eaf4de3dc.jpeg"
+    },
+    {
+      "id": "ffbf7ff8-dc4a-4c56-b157-7a59113be7b7",
+      "name": "Tropical twilight",
+      "categoryId": "cozy",
+      "img": "ffbf7ff8-dc4a-4c56-b157-7a59113be7b7.jpeg"
+    },
+    {
+      "id": "a592fa63-4ba6-4399-a120-1c0b79ac832d",
+      "name": "Miami",
+      "categoryId": "party-vibes",
+      "img": "a592fa63-4ba6-4399-a120-1c0b79ac832d.jpeg"
+    },
+    {
+      "id": "de7eda64-84bf-4ed6-a4fa-76e0ebdd1968",
+      "name": "Tokyo",
+      "categoryId": "party-vibes",
+      "img": "de7eda64-84bf-4ed6-a4fa-76e0ebdd1968.jpeg"
+    },
+    {
+      "id": "a6ba3a6e-1e3a-41fd-84f2-f7b021935deb",
+      "name": "Galaxy",
+      "categoryId": "serenity",
+      "img": "a6ba3a6e-1e3a-41fd-84f2-f7b021935deb.jpeg"
+    }
+  ]
+}

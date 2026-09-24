@@ -20,7 +20,11 @@ The card delegates lighting behavior to Scene Presets. It does not run its own s
 
 ## Preview
 
+Maximally configured card using real Scene Presets metadata and artwork, rendered in dark mode:
+
 ![Scene Presets Card dashboard preview](tests/browser-preview.png)
+
+Visual editor for the same configuration:
 
 ![Scene Presets Card visual editor](tests/editor-preview.png)
 
@@ -35,7 +39,12 @@ Installing the integration's files through HACS is only the first step. In Home 
 ### Install with HACS
 
 1. Open HACS in Home Assistant and select **Dashboard**.
-2. Open the menu, choose **Custom repositories**, and add this repository as category **Dashboard**.
+2. Open the menu, choose **Custom repositories**, and add the following repository as category **Dashboard**:
+
+   ```text
+   https://github.com/drivin/scene-presets-card
+   ```
+
 3. Search for **Scene Presets Card** and select **Download**.
 4. Reload the browser. If HACS does not add the dashboard resource automatically, add `/hacsfiles/scene-presets-card/scene-presets-card.js` as a **JavaScript module** under **Settings → Dashboards → Resources**.
 

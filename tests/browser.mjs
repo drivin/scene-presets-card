@@ -5,10 +5,20 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root=fileURLToPath(new URL('../',import.meta.url));
+const previewData=JSON.parse(await readFile(root+'tests/fixtures/scene-presets.json','utf8'));
 const server=createServer(async(req,res)=>{
   const path=new URL(req.url,'http://localhost').pathname;
-  if(path==='/') {res.setHeader('Content-Type','text/html');res.end('<html><body><script type="module" src="/scene-presets-card.js"></script></body></html>');return;}
-  try {const data=await readFile(root+path.slice(1));res.setHeader('Content-Type',path.endsWith('.js')?'text/javascript':'text/plain');res.end(data);}
+  if(path==='/') {res.setHeader('Content-Type','text/html');res.end(`<html><head><style>
+    :root{color-scheme:dark;--primary-text-color:#e1e1e1;--secondary-text-color:#a8adb5;--primary-color:#03a9f4;--divider-color:#3b4149;--card-background-color:#1c1c1c;--secondary-background-color:#252a31}
+    html,body{margin:0;background:#11151a;color:var(--primary-text-color);font-family:system-ui}body{padding:24px}scene-presets-card,scene-presets-editor{display:block;background:var(--card-background-color);border-radius:16px;box-shadow:0 8px 30px #0008}#preview{width:980px;padding:20px}
+  </style></head><body><script type="module" src="/scene-presets-card.js"></script></body></html>`);return;}
+  try {
+    const file=path.startsWith('/assets/scene_presets/')
+      ? root+'tests/fixtures/scene-presets/'+path.slice('/assets/scene_presets/'.length)
+      : root+path.slice(1);
+    const data=await readFile(file);
+    res.setHeader('Content-Type',path.endsWith('.js')?'text/javascript':path.endsWith('.jpeg')?'image/jpeg':'text/plain');res.end(data);
+  }
   catch {res.writeHead(404);res.end();}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -205,7 +215,49 @@ try {
   assert.equal(await card.locator('.tile').count(),1);
 
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:root+'tests/browser-preview.png',fullPage:true});
-  await editor.screenshot({path:root+'tests/editor-preview.png'});
+  endpointStatus=200;
+  await page.unroute('**/assets/scene_presets/scene_presets.json');
+  await page.route('**/assets/scene_presets/scene_presets.json',route=>route.fulfill({json:previewData}));
+  const previewConfig={
+    type:'custom:scene-presets-card',title:'Living room scenes',
+    targets:{entity_id:['light.ceiling','light.floor_lamp','light.ambient']},
+    filter:{mode:'exclude',categories:[],presets:[]},
+    scene:{mode:'normal',shuffle:true,smart_shuffle:true,brightness:{override:true,value:180},transition:{override:true,value:5},interval:120},
+    controls:{mode:true,shuffle:true,smart_shuffle:true,brightness:true,brightness_input:'slider',transition:true,interval:true},
+    favorites:{enabled:true,mode:'user',namespace:'living-room'},remember:{controls:true},storage_key:'living-room-scenes',
+    display:{columns:3,show_title:true,show_name:true,center_titles:true,group_by_category:true,show_category:true,show_refresh:true,search:true,category_selector:true,favorites:true,active_scene:true}
+  };
+  await page.evaluate(({previewConfig,activePreset})=>{
+    document.body.replaceChildren(); stored.clear(); subscribers.clear();
+    const previewHass={...hassMock,locale:{language:'en'},states:{
+      'light.ceiling':{state:'on',attributes:{friendly_name:'Ceiling'}},
+      'light.floor_lamp':{state:'on',attributes:{friendly_name:'Floor lamp'}},
+      'light.ambient':{state:'on',attributes:{friendly_name:'Ambient light'}},
+    },callWS:async msg=>{
+      if(msg.type==='scene_presets/get_dynamic_scenes')return {dynamic_scenes:[{id:'preview-dynamic',running:true,interval:120,parameters:{preset_id:activePreset,light_entity_ids:['light.ceiling','light.floor_lamp'],transition:60}}]};
+      if(msg.type.includes('/set_')){stored.set(msg.key,msg.value);subscribers.get(msg.key)?.forEach(cb=>cb({value:msg.value}));return;}
+      return {value:stored.get(msg.key)??null};
+    }};
+    window.previewConfig=previewConfig; window.previewHass=previewHass;
+    const frame=document.createElement('main');frame.id='preview';
+    const preview=document.createElement('scene-presets-card');preview.setConfig(previewConfig);preview.hass=previewHass;frame.append(preview);document.body.append(frame);
+  },{previewConfig,activePreset:previewData.presets[0].id});
+  const preview=page.locator('#preview scene-presets-card');
+  await preview.evaluate(card=>card.loadPresets(true));
+  await page.waitForFunction(expected=>document.querySelector('#preview scene-presets-card').shadowRoot.querySelectorAll('.tile').length===expected,previewData.presets.length);
+  await preview.locator('img').evaluateAll(images=>Promise.all(images.map(img=>img.complete ? undefined : new Promise(resolve=>img.addEventListener('load',resolve,{once:true})))));
+  assert.equal(await preview.locator('.tile img').count(),previewData.presets.length,'README preview uses real preset images');
+  assert.equal(await preview.locator('.preset-group').count(),previewData.categories.length,'README preview shows configured category groups');
+  await page.locator('#preview').screenshot({path:root+'tests/browser-preview.png'});
+
+  await page.evaluate(()=>{
+    document.body.replaceChildren();
+    const previewEditor=document.createElement('scene-presets-editor');
+    previewEditor.sectionStates=new Map(['targets','filter','categories','presets','scene','display','controls','favorites','remember','renderer','diagnostics'].map(key=>[key,true]));
+    previewEditor.setConfig(previewConfig);previewEditor.hass={...previewHass,locale:{language:'en'}};document.body.append(previewEditor);
+  });
+  const previewEditor=page.locator('scene-presets-editor');
+  await previewEditor.getByText('6 of 6 presets available for this card',{exact:true}).waitFor({state:'attached'});
+  await previewEditor.screenshot({path:root+'tests/editor-preview.png'});
   console.log('Browser contracts passed: shared cache, tap/favorite isolation, live sync, search, dynamic/stop, fallback, persistence, editor preservation, child renderer.');
 } finally {await browser?.close();await new Promise(resolve=>server.close(resolve));}
