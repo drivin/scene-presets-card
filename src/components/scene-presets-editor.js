@@ -9,7 +9,7 @@ import {normalizeScene, normalizeConfig} from '../models/card-config.js';
 import {missingIds, filterPresets} from '../utils/validation.js';
 import {runtimeControls} from './runtime-controls.js';
 
-export function setConfigPath(config, path, value) {
+function setConfigPath(config, path, value) {
   const next = structuredClone(config); let cursor = next;
   const parts = path.split('.');
   for (const key of parts.slice(0,-1)) { cursor[key] = {...cursor[key]}; cursor = cursor[key]; }
@@ -120,8 +120,8 @@ export class ScenePresetsEditor extends HTMLElement {
     try { scene = normalizeScene(c.scene); } catch { scene = normalizeScene(); }
     root.append(this.section('scene', this.t('editor.scene'), this.t('editor.scene_help'), [
       runtimeControls(scene, {mode:true,shuffle:true,smart_shuffle:true,brightness:true,brightness_input:c.controls?.brightness_input || 'number',transition:true,interval:true}, {normalScenes:true,dynamicScenes:true}, value => {
-        this.commit({...this.config, scene: {...this.config.scene, ...value, transition: value.mode === 'dynamic' ? value.dynamic_transition : value.transition}});
-      }, this.t),
+        this.commit({...this.config, scene: {...this.config.scene, ...value}});
+      }, this.t, this.t('editor.default_mode')),
     ]));
     root.append(this.section('display', this.t('editor.display'), this.t('editor.display_help'), [
       this.text(this.t('editor.title'), 'title', c.title), field(this.t('editor.columns'), el('input', {type:'number', min:1, max:12, value:c.display?.columns ?? 3,

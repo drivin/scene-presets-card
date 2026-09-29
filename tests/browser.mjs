@@ -31,6 +31,18 @@ try {
   let requests=0; let endpointStatus=200;
   await page.route('**/assets/scene_presets/scene_presets.json',route=>{requests++;if(endpointStatus!==200)return route.fulfill({status:endpointStatus,body:'Unavailable'});return route.fulfill({json:{categories:[{id:'a',name:'Relax'},{id:'b',name:'Party'}],presets:[{id:'x',name:'Sunset',categoryId:'a'},{id:'y',name:'Custom',categoryId:'b',custom:true}]}});});
   await page.goto(`http://127.0.0.1:${server.address().port}`);
+  const stubConfigs=await page.evaluate(async()=>{
+    await customElements.whenDefined('scene-presets-card');
+    const Card=customElements.get('scene-presets-card');
+    return [Card.getStubConfig({states:{'sensor.one':{},'light.first':{},'light.second':{}}}),Card.getStubConfig({states:{'sensor.one':{}}})];
+  });
+  assert.deepEqual(stubConfigs,[{targets:{entity_id:['light.first']}},{targets:{entity_id:[]}}]);
+  assert.equal('type' in stubConfigs[0],false,'stub config omits the card type');
+  const entitySuggestions=await page.evaluate(()=>{
+    const card=window.customCards.find(entry=>entry.type==='scene-presets-card');
+    return [card.getEntitySuggestion({},'light.kitchen'),card.getEntitySuggestion({},'switch.kitchen')];
+  });
+  assert.deepEqual(entitySuggestions,[{config:{type:'custom:scene-presets-card',targets:{entity_id:['light.kitchen']}}},null]);
   await page.evaluate(async()=>{
     await customElements.whenDefined('scene-presets-card');
     window.calls=[];window.stored=new Map();window.subscribers=new Map();
@@ -47,6 +59,7 @@ try {
   });
   const card=page.locator('scene-presets-card').first();
   await card.locator('.tile').first().waitFor();
+  assert.equal(await card.evaluate(element=>getComputedStyle(element).fontFamily),await page.locator('body').evaluate(element=>getComputedStyle(element).fontFamily));
   await page.waitForFunction(()=>document.querySelectorAll('scene-presets-card')[1].shadowRoot.querySelectorAll('.tile').length===2);
   assert.equal(requests,1,'shared discovery request');
   assert.equal(await card.locator('.tile').count(),2);
@@ -108,16 +121,44 @@ try {
   await page.waitForFunction(()=>stored.get('scene_presets_card:runtime:room')?.scene.mode==='dynamic');
   await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,remember:{controls:true},storage_key:'room'}));
   await page.waitForFunction(()=>document.querySelector('scene-presets-card').scene.mode==='dynamic');
+  // A remembered mode only overrides the configured default while the runtime mode control is enabled.
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,scene:{mode:'normal'},controls:{...config.controls,mode:false},remember:{controls:true},storage_key:'room'}));
+  await page.waitForTimeout(50);
+  assert.equal(await page.evaluate(()=>document.querySelector('scene-presets-card').scene.mode),'normal');
+  assert.equal(await card.getByLabel('Modus',{exact:true}).count(),0);
+  // The editor retains a functional native multi-select if HA's selector cannot be loaded.
+  await page.evaluate(()=>{
+    const editor=document.createElement('scene-presets-editor');window.fallbackEdited=null;
+    editor.addEventListener('config-changed',event=>window.fallbackEdited=event.detail.config);
+    editor.setConfig({...config,targets:{entity_id:['light.one','group.missing']}});
+    editor.hass={...hassMock,states:{...hassMock.states,'group.all':{state:'on',attributes:{friendly_name:'All lights'}}}};
+    editor.dataset.test='fallback-editor';document.body.append(editor);
+  });
+  const fallbackEditor=page.locator('scene-presets-editor[data-test="fallback-editor"]');
+  const fallbackSelector=fallbackEditor.locator('details[data-section="targets"] select[multiple]');
+  await fallbackSelector.waitFor();
+  assert.deepEqual(await fallbackSelector.locator('option').evaluateAll(options=>options.map(option=>option.value)),['light.one','group.all','group.missing']);
+  assert.deepEqual(await fallbackSelector.locator('option:checked').evaluateAll(options=>options.map(option=>option.value)),['light.one','group.missing']);
+  await fallbackSelector.selectOption(['light.one','group.all']);
+  assert.deepEqual(await page.evaluate(()=>fallbackEdited.targets.entity_id),['light.one','group.all']);
+  await fallbackEditor.evaluate(editor=>editor.remove());
   // Editor events retain unknown root and child properties.
   await page.evaluate(()=>{
     customElements.define('ha-selector',class extends HTMLElement{});
     const editor=document.createElement('scene-presets-editor');window.edited=null;
     editor.addEventListener('config-changed',e=>window.edited=e.detail.config);
-    editor.setConfig({...config,unknown:{keep:42},preset_card:{type:'custom:button-card',custom_property_xyz:7},filter:{presets:['gone']}});
+    editor.setConfig({...config,scene:{mode:'normal',transition:{override:true,value:7},dynamic_transition:33},unknown:{keep:42},preset_card:{type:'custom:button-card',custom_property_xyz:7},filter:{presets:['gone']}});
     editor.hass=hassMock;document.body.append(editor);
   });
   const editor=page.locator('scene-presets-editor');
   await editor.getByText('Fehlendes Preset: gone',{exact:true}).waitFor();
+  await editor.locator('details[data-section="scene"] > summary').click();
+  assert.equal(await editor.getByLabel('Standardmodus',{exact:true}).inputValue(),'normal');
+  await editor.getByLabel('Standardmodus',{exact:true}).selectOption('dynamic');
+  assert.deepEqual(await page.evaluate(()=>[edited.scene.transition,edited.scene.dynamic_transition]),[{override:true,value:7},33]);
+  await editor.getByLabel('Standardmodus',{exact:true}).selectOption('normal');
+  assert.deepEqual(await page.evaluate(()=>[edited.scene.transition,edited.scene.dynamic_transition]),[{override:true,value:7},33]);
+  await editor.locator('details[data-section="scene"] > summary').click();
   await editor.locator('details[data-section="display"] > summary').click();
   await editor.getByLabel('Titel',{exact:true}).fill('Edited');
   await editor.getByLabel('Titel',{exact:true}).press('Tab');

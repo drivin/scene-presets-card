@@ -1,6 +1,6 @@
 import {localize} from '../localize/localize.js';
 import {el, field} from '../utils/dom.js';
-export function runtimeControls(scene, controls, capabilities, changed, t = localize()) {
+export function runtimeControls(scene, controls, capabilities, changed, t = localize(), modeLabel = t('common.mode')) {
   const root = el('div', {class: 'controls'});
   const update = (key, value) => changed({...scene, [key]: value});
   const check = (label, value, callback) => field(label, el('input', {type: 'checkbox', checked: !!value, onchange: e => callback(e.target.checked)}));
@@ -12,7 +12,7 @@ export function runtimeControls(scene, controls, capabilities, changed, t = loca
       oninput: e => { output.value = e.target.value; }, onchange: e => callback(Number(e.target.value))});
     return el('label', {}, [el('span', {text: label}), el('span', {class: 'range-control'}, [input, output])]);
   };
-  if (controls.mode) root.append(field(t('common.mode'), el('select', {value: scene.mode, onchange: e => update('mode', e.target.value)}, [
+  if (controls.mode) root.append(field(modeLabel, el('select', {value: scene.mode, onchange: e => update('mode', e.target.value)}, [
     el('option', {value: 'normal', text: t('common.normal'), selected: scene.mode === 'normal', disabled: !capabilities.normalScenes}),
     el('option', {value: 'dynamic', text: t('common.dynamic'), selected: scene.mode === 'dynamic', disabled: !capabilities.dynamicScenes}),
   ])));

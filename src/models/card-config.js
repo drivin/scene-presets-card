@@ -4,9 +4,9 @@ export function normalizeScene(scene = {}) {
   const mode = scene.mode ?? 'normal';
   if (!['normal', 'dynamic'].includes(mode)) throw new LocalizedError('error.scene_mode');
   const brightness = {override: false, value: 128, ...scene.brightness};
-  const transition = typeof scene.transition === 'number'
-    ? {override: false, value: 1} : {override: false, value: 1, ...scene.transition};
-  const dynamicTransition = typeof scene.transition === 'number' ? scene.transition : (scene.dynamic_transition ?? 60);
+  if (scene.transition !== undefined && (typeof scene.transition !== 'object' || scene.transition === null || Array.isArray(scene.transition))) throw new LocalizedError('error.scene_transition');
+  const transition = {override: false, value: 1, ...scene.transition};
+  const dynamicTransition = scene.dynamic_transition ?? 60;
   for (const key of ['shuffle', 'smart_shuffle']) if (scene[key] !== undefined && typeof scene[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: key});
   for (const [key, item] of [['brightness', brightness], ['transition', transition]]) {
     if (typeof item.override !== 'boolean') throw new LocalizedError('error.boolean', {name: `${key}.override`});

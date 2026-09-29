@@ -12,7 +12,7 @@ Examples: [README](../README.md).
 | scene.shuffle / smart_shuffle | false | Normal mode only, handled upstream |
 | scene.brightness | {override:false,value:128} | 1–255; sent only when overridden |
 | scene.transition (normal) | {override:false,value:1} | 0–300 whole seconds |
-| scene.transition (dynamic) | 60 | 0–300 whole seconds |
+| scene.dynamic_transition | 60 | Dynamic mode; 0–300 whole seconds |
 | scene.interval | 120 | 1–300 whole seconds |
 | controls.* | false | mode, shuffle, smart_shuffle, brightness, transition, interval |
 | remember.controls | false | Optional Home Assistant user storage |
@@ -34,9 +34,9 @@ Examples: [README](../README.md).
 | preset_card.template | empty | Template interpreted by the renderer |
 | debug | false | Capabilities, cache, item count, renderer and missing IDs |
 
-Runtime values do not modify the dashboard YAML. Stored runtime values replace the scene defaults when the card loads. A new `storage_key` starts with the configured defaults. The editor preserves unknown fields, including `preset_card.custom_property_xyz`.
+Runtime values do not modify the dashboard YAML. `scene.mode` is the default mode selected in the visual editor. When `remember.controls` and the runtime mode control are enabled, a stored valid mode takes priority. When the runtime mode control is disabled, the configured default mode is always used. Other stored control values replace their configured scene defaults when the card loads. A new `storage_key` starts with the configured defaults. The editor preserves unknown fields, including `preset_card.custom_property_xyz`.
 
-`scene.dynamic_transition` is an optional additional default used when switching to dynamic mode while `scene.transition` is a normal-mode override object.
+`scene.transition` is always the normal-mode override object. `scene.dynamic_transition` is always the transition value used by dynamic mode, so switching modes in the editor preserves both settings independently.
 
 When `override:false`, the service parameter is omitted completely. Dynamic mode sends only the preset, targets, interval and transition. Hidden normal-mode overrides and shuffle controls do not apply in dynamic mode.
 

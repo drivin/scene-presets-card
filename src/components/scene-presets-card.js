@@ -22,7 +22,7 @@ export class ScenePresetsCard extends HTMLElement {
   }
   static get version() { return VERSION; }
   static getConfigElement() { return document.createElement('scene-presets-editor'); }
-  static getStubConfig(hass) { return {type: 'custom:scene-presets-card', targets: {entity_id: Object.keys(hass?.states || {}).filter(id => id.startsWith('light.')).slice(0,1)}}; }
+  static getStubConfig(hass) { return {targets: {entity_id: Object.keys(hass?.states || {}).filter(id => id.startsWith('light.')).slice(0,1)}}; }
   getCardSize() { return 5; }
   setConfig(config) {
     try { this.config = normalizeConfig(config); } catch (error) { throw new Error(this.t.render(error)); }
@@ -79,7 +79,10 @@ export class ScenePresetsCard extends HTMLElement {
   async loadRuntime(generation) {
     if (!this.config.remember?.controls) return;
     const store = new RuntimeStore(this.storage, this.config.storage_key); this.runtimeStore = store;
-    try { const scene = await store.load(this.scene); if (generation === this.generation) this.scene = scene; }
+    try {
+      const scene = await store.load(this.scene);
+      if (generation === this.generation) this.scene = {...scene, mode: this.config.controls.mode ? scene.mode : this.config.scene.mode};
+    }
     catch (error) { if (generation === this.generation) this.notice('runtime', message('notice.runtime', {error})); }
   }
   async refreshStatus(generation = this.generation) {

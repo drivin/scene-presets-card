@@ -261,6 +261,7 @@ var en_default = {
   "editor.available": "{count} of {total} presets available for this card",
   "editor.scene": "3 \xB7 Scene behavior",
   "editor.scene_help": "Defaults when applying a preset. Unless an override is enabled, the integration supplies the value.",
+  "editor.default_mode": "Default mode",
   "editor.display": "4 \xB7 Appearance",
   "editor.display_help": "Choose which information and search options appear on the dashboard.",
   "editor.title": "Title",
@@ -327,6 +328,7 @@ var en_default = {
   "notice.renderer": "{error} Using the built-in renderer.",
   "error.unknown": "Unknown error.",
   "error.scene_mode": "scene.mode must be normal or dynamic.",
+  "error.scene_transition": "scene.transition must be an override object; use scene.dynamic_transition for dynamic scenes.",
   "error.boolean": "{name}: a boolean is required.",
   "error.brightness_input": "controls.brightness_input must be number or slider.",
   "error.config": "Configuration is missing.",
@@ -418,6 +420,7 @@ var de_default = {
   "editor.available": "{count} von {total} Presets f\xFCr diese Karte verf\xFCgbar",
   "editor.scene": "3 \xB7 Scene-Verhalten",
   "editor.scene_help": "Standardwerte beim Anwenden eines Presets. Ohne aktivierten Override bleibt der Wert der Integration erhalten.",
+  "editor.default_mode": "Standardmodus",
   "editor.display": "4 \xB7 Darstellung",
   "editor.display_help": "Lege fest, welche Informationen und Suchm\xF6glichkeiten im Dashboard erscheinen.",
   "editor.title": "Titel",
@@ -484,6 +487,7 @@ var de_default = {
   "notice.renderer": "{error} Interner Renderer wird verwendet.",
   "error.unknown": "Unbekannter Fehler.",
   "error.scene_mode": "scene.mode: normal oder dynamic erforderlich.",
+  "error.scene_transition": "scene.transition muss ein Override-Objekt sein; verwende scene.dynamic_transition f\xFCr dynamische Szenen.",
   "error.boolean": "{name}: Boolean erforderlich.",
   "error.brightness_input": "controls.brightness_input muss number oder slider sein.",
   "error.config": "Konfiguration fehlt.",
@@ -575,6 +579,7 @@ var nl_default = {
   "editor.available": "{count} van {total} presets beschikbaar voor deze kaart",
   "editor.scene": "3 \xB7 Sc\xE8negedrag",
   "editor.scene_help": "Standaardwaarden bij het toepassen van een preset. Zonder overschrijving blijft de waarde van de integratie behouden.",
+  "editor.default_mode": "Standaardmodus",
   "editor.display": "4 \xB7 Weergave",
   "editor.display_help": "Kies welke informatie en zoekopties op het dashboard verschijnen.",
   "editor.title": "Titel",
@@ -641,6 +646,7 @@ var nl_default = {
   "notice.renderer": "{error} De ingebouwde weergave wordt gebruikt.",
   "error.unknown": "Onbekende fout.",
   "error.scene_mode": "scene.mode moet normal of dynamic zijn.",
+  "error.scene_transition": "scene.transition moet een override-object zijn; gebruik scene.dynamic_transition voor dynamische sc\xE8nes.",
   "error.boolean": "{name}: een booleaanse waarde is vereist.",
   "error.brightness_input": "controls.brightness_input moet number of slider zijn.",
   "error.config": "Configuratie ontbreekt.",
@@ -732,6 +738,7 @@ var fr_default = {
   "editor.available": "{count} pr\xE9r\xE9glages sur {total} disponibles pour cette carte",
   "editor.scene": "3 \xB7 Comportement des sc\xE8nes",
   "editor.scene_help": "Valeurs par d\xE9faut lors de l\u2019application d\u2019un pr\xE9r\xE9glage. Sans remplacement activ\xE9, la valeur de l\u2019int\xE9gration est conserv\xE9e.",
+  "editor.default_mode": "Mode par d\xE9faut",
   "editor.display": "4 \xB7 Apparence",
   "editor.display_help": "Choisissez les informations et les options de recherche \xE0 afficher sur le tableau de bord.",
   "editor.title": "Titre",
@@ -798,6 +805,7 @@ var fr_default = {
   "notice.renderer": "{error} Utilisation du rendu int\xE9gr\xE9.",
   "error.unknown": "Erreur inconnue.",
   "error.scene_mode": "scene.mode doit \xEAtre normal ou dynamic.",
+  "error.scene_transition": "scene.transition doit \xEAtre un objet de remplacement ; utilisez scene.dynamic_transition pour les sc\xE8nes dynamiques.",
   "error.boolean": "{name} : une valeur bool\xE9enne est requise.",
   "error.brightness_input": "controls.brightness_input doit valoir number ou slider.",
   "error.config": "Configuration manquante.",
@@ -900,22 +908,45 @@ var LovelaceCardAdapter = class {
     if (!customElements.get("ha-selector")) throw new LocalizedError("error.selector");
   }
   entitySelector(hass, value, onChange) {
-    const selector = document.createElement("ha-selector");
-    selector.hass = hass;
-    selector.selector = { entity: { domain: ["light", "group"], multiple: true } };
-    selector.value = value;
-    selector.addEventListener("value-changed", (event) => {
-      event.stopPropagation();
-      onChange(event.detail.value);
-    });
-    return selector;
+    if (customElements.get("ha-selector")) {
+      const selector = document.createElement("ha-selector");
+      selector.hass = hass;
+      selector.selector = { entity: { domain: ["light", "group"], multiple: true } };
+      selector.value = value;
+      selector.addEventListener("value-changed", (event) => {
+        event.stopPropagation();
+        onChange(event.detail.value);
+      });
+      return selector;
+    }
+    const supported = Object.keys(hass?.states || {}).filter((id) => /^(light|group)\./.test(id));
+    const entityIds = [.../* @__PURE__ */ new Set([...supported, ...value])];
+    const select = document.createElement("select");
+    select.multiple = true;
+    select.size = Math.min(Math.max(entityIds.length, 2), 8);
+    for (const id of entityIds) {
+      const option = document.createElement("option");
+      const name = hass?.states?.[id]?.attributes?.friendly_name;
+      option.value = id;
+      option.textContent = name ? `${name} (${id})` : id;
+      option.selected = value.includes(id);
+      select.append(option);
+    }
+    select.addEventListener("change", () => onChange([...select.selectedOptions].map((option) => option.value)));
+    return select;
   }
   register(name, constructor) {
     if (!customElements.get(name)) customElements.define(name, constructor);
   }
   publishCard() {
     globalThis.customCards = globalThis.customCards || [];
-    if (!globalThis.customCards.some((c) => c.type === "scene-presets-card")) globalThis.customCards.push({ type: "scene-presets-card", name: "Scene Presets", description: "Dynamic scene presets with shared lights and settings", preview: true });
+    if (!globalThis.customCards.some((c) => c.type === "scene-presets-card")) globalThis.customCards.push({
+      type: "scene-presets-card",
+      name: "Scene Presets",
+      description: "Dynamic scene presets with shared lights and settings",
+      preview: true,
+      getEntitySuggestion: (_hass, entityId) => entityId.startsWith("light.") ? { config: { type: "custom:scene-presets-card", targets: { entity_id: [entityId] } } } : null
+    });
   }
 };
 
@@ -959,8 +990,9 @@ function normalizeScene(scene = {}) {
   const mode = scene.mode ?? "normal";
   if (!["normal", "dynamic"].includes(mode)) throw new LocalizedError("error.scene_mode");
   const brightness = { override: false, value: 128, ...scene.brightness };
-  const transition = typeof scene.transition === "number" ? { override: false, value: 1 } : { override: false, value: 1, ...scene.transition };
-  const dynamicTransition = typeof scene.transition === "number" ? scene.transition : scene.dynamic_transition ?? 60;
+  if (scene.transition !== void 0 && (typeof scene.transition !== "object" || scene.transition === null || Array.isArray(scene.transition))) throw new LocalizedError("error.scene_transition");
+  const transition = { override: false, value: 1, ...scene.transition };
+  const dynamicTransition = scene.dynamic_transition ?? 60;
   for (const key of ["shuffle", "smart_shuffle"]) if (scene[key] !== void 0 && typeof scene[key] !== "boolean") throw new LocalizedError("error.boolean", { name: key });
   for (const [key, item] of [["brightness", brightness], ["transition", transition]]) {
     if (typeof item.override !== "boolean") throw new LocalizedError("error.boolean", { name: `${key}.override` });
@@ -1272,6 +1304,7 @@ var FavoritesStore = class {
     if (this.closed) return;
     listener(this.ids);
     const unsubscribe = await this.adapter.subscribe(this.mode, this.key, (value) => {
+      if (this.closed) return;
       try {
         this.ids = parseFavorites(value);
         listener(this.ids);
@@ -1281,7 +1314,7 @@ var FavoritesStore = class {
     });
     if (this.closed) unsubscribe?.();
     else this.unsubscribe = unsubscribe;
-    this.live = !!unsubscribe;
+    this.live = !this.closed && !!unsubscribe;
   }
   toggle(id) {
     const task = this.queue.catch(() => {
@@ -1296,8 +1329,11 @@ var FavoritesStore = class {
     return task;
   }
   close() {
+    if (this.closed) return;
     this.closed = true;
     this.unsubscribe?.();
+    this.unsubscribe = null;
+    this.live = false;
   }
 };
 
@@ -1343,7 +1379,7 @@ function field(label, input) {
   return el("label", {}, [el("span", { text: label }), input]);
 }
 var styles = `
-  :host{display:block;color:var(--primary-text-color,#222);font-family:var(--paper-font-body1_-_font-family,system-ui)}
+  :host{display:block;color:var(--primary-text-color,#222);font-family:inherit}
   *{box-sizing:border-box}ha-card{display:block;padding:16px}h2{font-size:20px;margin:0}h3{font-size:16px}
   button,input,select{font:inherit;color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:8px;background:var(--card-background-color,#fff);padding:8px}
   button{cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--primary-color,#03a9f4)}
@@ -1363,7 +1399,7 @@ var styles = `
 `;
 
 // src/components/runtime-controls.js
-function runtimeControls(scene, controls, capabilities, changed, t = localize()) {
+function runtimeControls(scene, controls, capabilities, changed, t = localize(), modeLabel = t("common.mode")) {
   const root = el("div", { class: "controls" });
   const update = (key, value) => changed({ ...scene, [key]: value });
   const check = (label, value, callback) => field(label, el("input", { type: "checkbox", checked: !!value, onchange: (e) => callback(e.target.checked) }));
@@ -1395,7 +1431,7 @@ function runtimeControls(scene, controls, capabilities, changed, t = localize())
     });
     return el("label", {}, [el("span", { text: label }), el("span", { class: "range-control" }, [input, output])]);
   };
-  if (controls.mode) root.append(field(t("common.mode"), el("select", { value: scene.mode, onchange: (e) => update("mode", e.target.value) }, [
+  if (controls.mode) root.append(field(modeLabel, el("select", { value: scene.mode, onchange: (e) => update("mode", e.target.value) }, [
     el("option", { value: "normal", text: t("common.normal"), selected: scene.mode === "normal", disabled: !capabilities.normalScenes }),
     el("option", { value: "dynamic", text: t("common.dynamic"), selected: scene.mode === "dynamic", disabled: !capabilities.dynamicScenes })
   ])));
@@ -1527,7 +1563,7 @@ var ScenePresetsCard = class extends HTMLElement {
     return document.createElement("scene-presets-editor");
   }
   static getStubConfig(hass) {
-    return { type: "custom:scene-presets-card", targets: { entity_id: Object.keys(hass?.states || {}).filter((id) => id.startsWith("light.")).slice(0, 1) } };
+    return { targets: { entity_id: Object.keys(hass?.states || {}).filter((id) => id.startsWith("light.")).slice(0, 1) } };
   }
   getCardSize() {
     return 5;
@@ -1648,7 +1684,7 @@ var ScenePresetsCard = class extends HTMLElement {
     this.runtimeStore = store;
     try {
       const scene = await store.load(this.scene);
-      if (generation === this.generation) this.scene = scene;
+      if (generation === this.generation) this.scene = { ...scene, mode: this.config.controls.mode ? scene.mode : this.config.scene.mode };
     } catch (error) {
       if (generation === this.generation) this.notice("runtime", message("notice.runtime", { error }));
     }
@@ -1972,8 +2008,8 @@ var ScenePresetsEditor = class extends HTMLElement {
     }
     root.append(this.section("scene", this.t("editor.scene"), this.t("editor.scene_help"), [
       runtimeControls(scene, { mode: true, shuffle: true, smart_shuffle: true, brightness: true, brightness_input: c.controls?.brightness_input || "number", transition: true, interval: true }, { normalScenes: true, dynamicScenes: true }, (value) => {
-        this.commit({ ...this.config, scene: { ...this.config.scene, ...value, transition: value.mode === "dynamic" ? value.dynamic_transition : value.transition } });
-      }, this.t)
+        this.commit({ ...this.config, scene: { ...this.config.scene, ...value } });
+      }, this.t, this.t("editor.default_mode"))
     ]));
     root.append(this.section("display", this.t("editor.display"), this.t("editor.display_help"), [
       this.text(this.t("editor.title"), "title", c.title),

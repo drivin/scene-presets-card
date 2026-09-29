@@ -15,10 +15,11 @@ export class FavoritesStore {
     if (this.closed) return;
     listener(this.ids);
     const unsubscribe = await this.adapter.subscribe(this.mode, this.key, value => {
+      if (this.closed) return;
       try { this.ids = parseFavorites(value); listener(this.ids); } catch (error) { onError(error); }
     });
     if (this.closed) unsubscribe?.(); else this.unsubscribe = unsubscribe;
-    this.live = !!unsubscribe;
+    this.live = !this.closed && !!unsubscribe;
   }
   toggle(id) {
     const task = this.queue.catch(() => {}).then(async () => {
@@ -30,5 +31,8 @@ export class FavoritesStore {
     });
     this.queue = task; return task;
   }
-  close() { this.closed = true; this.unsubscribe?.(); }
+  close() {
+    if (this.closed) return;
+    this.closed = true; this.unsubscribe?.(); this.unsubscribe = null; this.live = false;
+  }
 }

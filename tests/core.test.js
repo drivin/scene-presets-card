@@ -27,9 +27,10 @@ test('exact normal payload and override omission', () => {
   assert.equal('brightness' in adapter.buildCall('x',target,{brightness:{override:false,value:80}}).data,false);
 });
 test('dynamic delegates shuffle and preserves transition after normalization', () => {
-  const call = fake().buildCall('x',target,normalizeScene({mode:'dynamic',interval:120,transition:60,shuffle:true}));
+  const call = fake().buildCall('x',target,normalizeScene({mode:'dynamic',interval:120,dynamic_transition:60,shuffle:true}));
   assert.deepEqual(call.data,{preset_id:'x',targets:target,interval:120,transition:60});
   assert.equal(call.service,'start_dynamic_scene');
+  assert.throws(()=>normalizeScene({mode:'dynamic',transition:30}),/scene\.transition/);
   assert.throws(()=>fake().buildCall('x',target,{mode:'dynamic',interval:0}));
 });
 test('central calls and missing capabilities', async () => {
@@ -103,6 +104,24 @@ test('favorites namespaces, shared server data across browsers and user separati
   const d=new FavoritesStore(forUser('one'),{mode:'user',namespace:'room'}); await d.load(()=>{}); assert.deepEqual(d.ids,[]);
   await Promise.all([a.toggle('y'),a.toggle('z')]); assert.deepEqual(a.ids,['x','y','z']);
   assert.throws(()=>parseFavorites({version:2,favorites:[]}));
+});
+test('favorites close ignores late subscription updates and unsubscribes once', async () => {
+  let subscriptionCallback, resolveSubscription, markStarted;
+  let updates=0, errors=0, unsubscribes=0;
+  const started=new Promise(resolve=>{markStarted=resolve;});
+  const adapter={
+    read:async()=>null,
+    subscribe:async(_mode,_key,listener)=>{
+      subscriptionCallback=listener; markStarted();
+      return new Promise(resolve=>{resolveSubscription=()=>resolve(()=>{unsubscribes++;});});
+    },
+  };
+  const store=new FavoritesStore(adapter,{mode:'user',namespace:'lifecycle'});
+  const loading=store.load(()=>{updates++;},()=>{errors++;});
+  await started; store.close();
+  subscriptionCallback({version:2,favorites:[]});
+  resolveSubscription(); await loading; store.close();
+  assert.equal(updates,1); assert.equal(errors,0); assert.equal(unsubscribes,1); assert.equal(store.live,false);
 });
 test('renderer variables and disabled actions preserve unknown config', () => {
   const result=rendererConfig({type:'custom:button-card',template:'scene',custom_property_xyz:42,tap_action:{action:'toggle'}},{id:'x',name:'Sunset',picture:null},'dynamic');

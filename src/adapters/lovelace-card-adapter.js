@@ -30,15 +30,30 @@ export class LovelaceCardAdapter {
     if (!customElements.get('ha-selector')) throw new LocalizedError('error.selector');
   }
   entitySelector(hass, value, onChange) {
-    const selector = document.createElement('ha-selector');
-    selector.hass = hass; selector.selector = {entity: {domain: ['light','group'], multiple: true}};
-    selector.value = value;
-    selector.addEventListener('value-changed', event => { event.stopPropagation(); onChange(event.detail.value); });
-    return selector;
+    if (customElements.get('ha-selector')) {
+      const selector = document.createElement('ha-selector');
+      selector.hass = hass; selector.selector = {entity: {domain: ['light','group'], multiple: true}};
+      selector.value = value;
+      selector.addEventListener('value-changed', event => { event.stopPropagation(); onChange(event.detail.value); });
+      return selector;
+    }
+    const supported = Object.keys(hass?.states || {}).filter(id => /^(light|group)\./.test(id));
+    const entityIds = [...new Set([...supported, ...value])];
+    const select = document.createElement('select'); select.multiple = true; select.size = Math.min(Math.max(entityIds.length, 2), 8);
+    for (const id of entityIds) {
+      const option = document.createElement('option'); const name = hass?.states?.[id]?.attributes?.friendly_name;
+      option.value = id; option.textContent = name ? `${name} (${id})` : id; option.selected = value.includes(id); select.append(option);
+    }
+    select.addEventListener('change', () => onChange([...select.selectedOptions].map(option => option.value)));
+    return select;
   }
   register(name, constructor) { if (!customElements.get(name)) customElements.define(name, constructor); }
   publishCard() {
     globalThis.customCards = globalThis.customCards || [];
-    if (!globalThis.customCards.some(c => c.type === 'scene-presets-card')) globalThis.customCards.push({type: 'scene-presets-card', name: 'Scene Presets', description: 'Dynamic scene presets with shared lights and settings', preview: true});
+    if (!globalThis.customCards.some(c => c.type === 'scene-presets-card')) globalThis.customCards.push({
+      type: 'scene-presets-card', name: 'Scene Presets', description: 'Dynamic scene presets with shared lights and settings', preview: true,
+      getEntitySuggestion: (_hass, entityId) => entityId.startsWith('light.')
+        ? {config: {type: 'custom:scene-presets-card', targets: {entity_id: [entityId]}}} : null,
+    });
   }
 }

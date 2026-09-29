@@ -1,47 +1,61 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- A localized **Default mode** field in the visual editor for selecting the card's initial normal or dynamic scene mode.
+- Card-picker suggestions for supported `light.*` entities on Home Assistant 2026.6 and newer.
+
+### Changed
+- Normal and dynamic transition settings now use the unambiguous `scene.transition` and `scene.dynamic_transition` fields respectively.
+
+### Fixed
+- Remembered runtime state no longer overrides the configured default mode when the dashboard mode control is disabled.
+- The card picker stub now follows the custom-card contract and leaves the `type` field to Home Assistant.
+- The visual editor now provides a native entity multi-select when Home Assistant's selector cannot be loaded.
+
 ## 1.2.0 — 2026-09-18
 
-- Karte, Editor, zugängliche Beschriftungen und eigene Fehlermeldungen übersetzt: Englisch als Standard/Fallback, dazu Deutsch, Niederländisch und Französisch.
-- Automatische Sprachwahl anhand des Home-Assistant-Profils einschließlich regionaler Varianten und Sprachwechsel ohne Verlust des Editorzustands.
-- Übersetzungen im Einzeldatei-Bundle; gemeinsamer Cache bleibt sprachunabhängig.
-- Englische GitHub-README und Übersetzungsleitfaden. Buy-Me-a-Coffee-Link als ausdrücklich gekennzeichneter Dummy. Apache-2.0-Lizenz einschließlich Lizenztext im JavaScript-Bundle.
+- Localized the card, editor, accessible labels, and custom error messages, with English as the default and fallback plus German, Dutch, and French.
+- Added automatic language selection from the Home Assistant profile, including regional variants and language changes without losing editor state.
+- Bundled translations into the single-file distribution while keeping the shared cache language-independent.
+- Added an English GitHub README and localization guide, an explicitly marked placeholder Buy Me a Coffee link, and the Apache 2.0 license text in the JavaScript bundle.
 
 ## 1.1.4 — 2026-09-18
 
-- Optional zentrierte Szenentitel im internen Renderer.
-- Kategorieüberschriften und getrennte Grids für aktuell sichtbare Presets, ohne leere Abschnitte.
-- Aktualisierungssymbol optional ausblendbar; dazu passende Fehler- und Statushinweise.
-- Alle drei Optionen im grafischen Editor unter Darstellung verfügbar.
-- 15 Kernprüfungen und erweiterte Browsertests bestanden.
+- Added optional centered scene titles in the built-in renderer.
+- Added category headings and separate grids for currently visible presets without empty sections.
+- Made the refresh icon optional and added matching error and status guidance.
+- Exposed all three options in the visual editor under Appearance.
+- Passed 15 core checks and the extended browser tests.
 
 ## 1.1.3 — 2026-09-18
 
-- Infosymbole und Service-Aufrufvorschau vollständig entfernt, einschließlich Hold-/Kontextmenü-Handlern.
-- Namensdarstellung nutzt den bisherigen Platz des Infosymbols.
+- Removed information icons and the service-call preview, including hold and context-menu handlers.
+- Expanded the name display into the space previously occupied by the information icon.
 
 ## 1.1.2 — 2026-09-18
 
-- Auslieferung als einzelne JavaScript-Datei: Versionswechsel aktualisiert jetzt auch Karte, Editor und alle Untermodulfunktionen.
-- Sichtbare Versionsnummer im Editor und im Debug-Panel.
-- Fehler mit gefülltem HTTP-Cache reproduziert und behobenes Verhalten in Chromium geprüft.
-- Modularer Quellcode bleibt unter src/; reproduzierbarer Build mit esbuild.
+- Switched distribution to a single JavaScript file so version changes update the card, editor, and all supporting modules together.
+- Added a visible version number to the editor and debug panel.
+- Reproduced the warm HTTP-cache failure and verified the corrected behavior in Chromium.
+- Kept the modular source under `src/` with a reproducible esbuild build.
 
 ## 1.1.1 — 2026-09-18
 
-- HTTP 404 mit konkretem Hinweis zur Aktivierung der Integration und Retry im Editor.
-- Kategorieauswahl zeigt nur Kategorien mit per Kartenfilter zugelassenen Presets; verwaiste Runtime-Auswahl wird zurückgesetzt.
-- Editor mit getrennten, einklappbaren Abschnitten, verständlichen Feldnamen und Hilfetexten; Suchtexte und offene Bereiche bleiben erhalten.
-- Sprachumfang dokumentiert: derzeit Deutsch, keine automatische Lokalisierung.
-- 15 Kernprüfungen und erweiterte Chromium-Browsertests bestanden.
+- Added specific integration-activation guidance for HTTP 404 responses and a retry action in the editor.
+- Limited category selection to categories containing presets allowed by the card filter and reset stale runtime selections.
+- Added separate collapsible editor sections with clearer field names and help text while preserving searches and expanded sections.
+- Documented the language scope at the time: German only, without automatic localization.
+- Passed 15 core checks and the extended Chromium browser tests.
 
 ## 1.1.0 — 2026-09-18
 
-- Automatische Preset-, Kategorie- und Bild-Discovery einschließlich Custom Presets.
-- Modularer Adapter, gemeinsamer Cache und Fingerprint-Validierung.
-- Normal/Dynamic, zentrale Targets, Overrides, Shuffle und Smart Shuffle.
-- Include/Exclude, Suche, Kategorien und grafischer Editor.
-- Interner Renderer und optionale Lovelace/button-card-Renderer mit Fallback.
-- User/Global-Favoriten mit Namespaces, HA-Rechten und verfügbarer Live-Synchronisation.
-- Runtime-Persistenz, Dynamic-Snapshot, Stop und Service-Preview.
-- Externe Vertragsdokumentation und automatisierte Tests.
+- Added automatic preset, category, and image discovery, including custom presets.
+- Added modular adapters, a shared cache, and fingerprint validation.
+- Added normal and dynamic modes, shared targets, overrides, Shuffle, and Smart Shuffle.
+- Added include/exclude filtering, search, categories, and a visual editor.
+- Added the built-in renderer and optional Lovelace or Button Card renderers with fallback behavior.
+- Added per-user and global favorites with namespaces, Home Assistant permission handling, and live synchronization when available.
+- Added runtime persistence, dynamic-scene snapshots, stop controls, and service previews.
+- Added external contract documentation and automated tests.

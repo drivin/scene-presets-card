@@ -12,7 +12,7 @@ export function el(tag, options = {}, children = []) {
 export function button(text, onClick, options = {}) { return el('button', {type: 'button', text, onclick: onClick, ...options}); }
 export function field(label, input) { if (!input.hasAttribute('aria-label')) input.setAttribute('aria-label', label); return el('label', {}, [el('span', {text: label}), input]); }
 export const styles = `
-  :host{display:block;color:var(--primary-text-color,#222);font-family:var(--paper-font-body1_-_font-family,system-ui)}
+  :host{display:block;color:var(--primary-text-color,#222);font-family:inherit}
   *{box-sizing:border-box}ha-card{display:block;padding:16px}h2{font-size:20px;margin:0}h3{font-size:16px}
   button,input,select{font:inherit;color:inherit;border:1px solid var(--divider-color,#ccc);border-radius:8px;background:var(--card-background-color,#fff);padding:8px}
   button{cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--primary-color,#03a9f4)}

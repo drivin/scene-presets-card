@@ -14,6 +14,7 @@ A Home Assistant dashboard card for [Scene Presets](https://github.com/Hypfer/ha
 - Per-user or shared favorites, plus optional saved control values.
 - Dynamic scene status and stop controls.
 - Built-in rendering, with optional `custom:button-card` or another Lovelace child card.
+- Suggested by the card picker when adding a supported light entity.
 - English, German, Dutch and French, following the Home Assistant user's language.
 
 The card delegates lighting behavior to Scene Presets. It does not run its own scene engine.
@@ -142,6 +143,8 @@ Search, favorites and category navigation operate within this selection. The cat
 
 ### Normal and dynamic scenes
 
+`scene.mode` selects the default mode when the card loads. The visual editor exposes it as **Default mode**. If the dashboard mode control is enabled together with `remember.controls`, a stored valid runtime mode takes priority. With the dashboard mode control disabled, the configured default is always used.
+
 For normal scenes, `brightness.override` and `transition.override` control whether the card sends those values. Brightness uses **1–255**, not percentages. Set an override to `false` to leave that value to the integration.
 
 When the dashboard brightness control is enabled, `controls.brightness_input` selects either the existing `number` field (default) or a `slider`. The visual editor exposes this choice under **Dashboard controls**.
@@ -152,7 +155,7 @@ For dynamic scenes, use intervals and transitions in seconds:
 scene:
   mode: dynamic
   interval: 120
-  transition: 60
+  dynamic_transition: 60
 ```
 
 Shuffle, Smart Shuffle, target resolution and conflicts between running dynamic scenes are handled by the integration.
