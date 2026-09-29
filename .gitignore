@@ -60,6 +60,7 @@ snippets/
 archive/
 playground/
 temp/
+/docs/DEVELOPMENT.md
 
 # Keep the generated HACS artifact under version control.
 !scene-presets-card.js

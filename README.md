@@ -248,7 +248,7 @@ npm run test:cache
 
 Edit the modules in `src/`, then rebuild the generated `scene-presets-card.js`. The build rejects runtime JavaScript imports. Source strings live in `src/localize/*.json` and are bundled into the release.
 
-Additional documentation: [configuration reference](docs/CONFIGURATION.md), [external interfaces](docs/EXTERNAL-DEPENDENCIES.md), [development notes](docs/DEVELOPMENT.md), [localization guide](docs/LOCALIZATION.md), and [changelog](CHANGELOG.md). All documentation is in English.
+Additional documentation: [configuration reference](docs/CONFIGURATION.md), [external interfaces](docs/EXTERNAL-DEPENDENCIES.md), [localization guide](docs/LOCALIZATION.md), and [changelog](CHANGELOG.md). All documentation is in English.
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues should be reported as described in [SECURITY.md](SECURITY.md).
 
