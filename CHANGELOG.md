@@ -1,10 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## 1.2.0 — 2026-09-29
 
 ### Added
 - A localized **Default mode** field in the visual editor for selecting the card's initial normal or dynamic scene mode.
 - Card-picker suggestions for supported `light.*` entities on Home Assistant 2026.6 and newer.
+- Localized the card, editor, accessible labels, and custom error messages, with English as the default and fallback plus German, Dutch, and French.
+- Added automatic language selection from the Home Assistant profile, including regional variants and language changes without losing editor state.
+- Bundled translations into the single-file distribution while keeping the shared cache language-independent.
+- Added an English GitHub README and localization guide, an explicitly marked placeholder Buy Me a Coffee link, and the Apache 2.0 license text in the JavaScript bundle.
 
 ### Changed
 - Normal and dynamic transition settings now use the unambiguous `scene.transition` and `scene.dynamic_transition` fields respectively.
@@ -13,13 +17,6 @@
 - Remembered runtime state no longer overrides the configured default mode when the dashboard mode control is disabled.
 - The card picker stub now follows the custom-card contract and leaves the `type` field to Home Assistant.
 - The visual editor now provides a native entity multi-select when Home Assistant's selector cannot be loaded.
-
-## 1.2.0 — 2026-09-18
-
-- Localized the card, editor, accessible labels, and custom error messages, with English as the default and fallback plus German, Dutch, and French.
-- Added automatic language selection from the Home Assistant profile, including regional variants and language changes without losing editor state.
-- Bundled translations into the single-file distribution while keeping the shared cache language-independent.
-- Added an English GitHub README and localization guide, an explicitly marked placeholder Buy Me a Coffee link, and the Apache 2.0 license text in the JavaScript bundle.
 
 ## 1.1.4 — 2026-09-18
 
