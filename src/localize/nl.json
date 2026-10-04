@@ -10,6 +10,7 @@
   "common.interval": "Interval (s)",
   "common.override": "{label} overschrijven",
   "common.category": "Categorie",
+  "common.preset": "Preset",
   "common.uncategorized": "Zonder categorie",
   "common.favorites": "Favorieten",
   "common.stop": "Stoppen",

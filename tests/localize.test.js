@@ -51,6 +51,7 @@ test('shared errors remain localizable after loading, including activation hints
 });
 test('validation and missing IDs are translated while data and identifiers remain unchanged', () => {
   assert.throws(()=>normalizeConfig({targets:{entity_id:[]}}),error=>forLanguage('fr').render(error).includes('Au moins une cible'));
+  assert.throws(()=>new ScenePresetsAdapter({}).normalizePreset({id:'x'},new Map()),error=>forLanguage('fr').render(error).includes('Préréglage'));
   assert.deepEqual(missingIds({filter:{presets:['x'],categories:['a']}},{presets:[],categories:[]},forLanguage('nl')),['Ontbrekende preset: x','Ontbrekende categorie: a']);
   const normalized=new ScenePresetsAdapter({}).normalizePreset({id:'x',name:'Original name'},new Map());
   assert.equal(normalized.name,'Original name'); assert.equal(normalized.categoryName,'');

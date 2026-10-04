@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Configuration validation now rejects non-boolean values for all documented boolean options instead of treating strings such as `"false"` as enabled.
+- The configuration reference now includes `controls.brightness_input` and `display.show_title`, and preset validation errors are fully localized.
+
 ## 1.2.0 — 2026-09-29
 
 ### Added

@@ -27,15 +27,23 @@ export function normalizeConfig(input) {
   if (!['include','exclude'].includes(filter.mode) || 'include' in filter || 'exclude' in filter) throw new LocalizedError('error.filter');
   filter.categories = ids(filter.categories, 'filter.categories'); filter.presets = ids(filter.presets, 'filter.presets');
   const favorites = {enabled: false, mode: 'user', namespace: 'default', ...input.favorites};
+  if (typeof favorites.enabled !== 'boolean') throw new LocalizedError('error.boolean', {name: 'favorites.enabled'});
   if (!['user','global'].includes(favorites.mode)) throw new LocalizedError('error.favorites_mode');
   if (typeof favorites.namespace !== 'string' || !favorites.namespace.trim()) throw new LocalizedError('error.namespace');
-  if (input.remember?.controls && (typeof input.storage_key !== 'string' || !input.storage_key.trim())) throw new LocalizedError('error.storage_key');
-  const controls = {brightness_input: 'number', ...input.controls};
+  const remember = {controls: false, ...input.remember};
+  if (typeof remember.controls !== 'boolean') throw new LocalizedError('error.boolean', {name: 'remember.controls'});
+  if (remember.controls && (typeof input.storage_key !== 'string' || !input.storage_key.trim())) throw new LocalizedError('error.storage_key');
+  const controls = {mode: false, shuffle: false, smart_shuffle: false, brightness: false, transition: false, interval: false, brightness_input: 'number', ...input.controls};
+  for (const key of ['mode', 'shuffle', 'smart_shuffle', 'brightness', 'transition', 'interval']) {
+    if (typeof controls[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: `controls.${key}`});
+  }
   if (!['number','slider'].includes(controls.brightness_input)) throw new LocalizedError('error.brightness_input');
   const display = {columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display};
-  for (const key of ['show_title', 'center_titles', 'group_by_category', 'show_refresh']) {
+  for (const key of ['show_title', 'show_name', 'show_category', 'center_titles', 'group_by_category', 'show_refresh', 'search', 'category_selector', 'favorites', 'active_scene']) {
     if (typeof display[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: `display.${key}`});
   }
   numberIn(display.columns, 1, 12, 'display.columns');
-  return {...input, targets: {entity_id: entityIds}, filter, scene: normalizeScene(input.scene), controls, favorites, display};
+  const debug = input.debug ?? false;
+  if (typeof debug !== 'boolean') throw new LocalizedError('error.boolean', {name: 'debug'});
+  return {...input, targets: {entity_id: entityIds}, filter, scene: normalizeScene(input.scene), controls, favorites, remember, display, debug};
 }

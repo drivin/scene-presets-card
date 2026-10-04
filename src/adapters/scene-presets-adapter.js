@@ -33,7 +33,7 @@ export class ScenePresetsAdapter {
       const seen = new Set();
       for (const value of values) {
         assertRecord(value, kind);
-        if (seen.has(value.id)) throw new LocalizedError('error.duplicate', {kind: kind === 'category' ? message('common.category') : 'Preset', id: value.id});
+        if (seen.has(value.id)) throw new LocalizedError('error.duplicate', {kind: kind === 'category' ? message('common.category') : message('common.preset'), id: value.id});
         seen.add(value.id);
       }
     }

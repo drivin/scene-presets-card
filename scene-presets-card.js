@@ -219,6 +219,7 @@ var en_default = {
   "common.interval": "Interval (s)",
   "common.override": "Override {label}",
   "common.category": "Category",
+  "common.preset": "Preset",
   "common.uncategorized": "Uncategorized",
   "common.favorites": "Favorites",
   "common.stop": "Stop",
@@ -378,6 +379,7 @@ var de_default = {
   "common.interval": "Intervall (s)",
   "common.override": "{label} \xFCberschreiben",
   "common.category": "Kategorie",
+  "common.preset": "Preset",
   "common.uncategorized": "Ohne Kategorie",
   "common.favorites": "Favoriten",
   "common.stop": "Stop",
@@ -537,6 +539,7 @@ var nl_default = {
   "common.interval": "Interval (s)",
   "common.override": "{label} overschrijven",
   "common.category": "Categorie",
+  "common.preset": "Preset",
   "common.uncategorized": "Zonder categorie",
   "common.favorites": "Favorieten",
   "common.stop": "Stoppen",
@@ -696,6 +699,7 @@ var fr_default = {
   "common.interval": "Intervalle (s)",
   "common.override": "Remplacer : {label}",
   "common.category": "Cat\xE9gorie",
+  "common.preset": "Pr\xE9r\xE9glage",
   "common.uncategorized": "Sans cat\xE9gorie",
   "common.favorites": "Favoris",
   "common.stop": "Arr\xEAter",
@@ -956,7 +960,7 @@ var VERSION = true ? "1.2.0" : "development";
 // src/models/preset.js
 function assertRecord(value, kind) {
   if (!value || typeof value.id !== "string" || !value.id || typeof value.name !== "string") {
-    throw new LocalizedError("error.record", { kind: kind === "category" ? message("common.category") : "Preset" });
+    throw new LocalizedError("error.record", { kind: kind === "category" ? message("common.category") : message("common.preset") });
   }
 }
 
@@ -1021,17 +1025,25 @@ function normalizeConfig(input) {
   filter.categories = ids(filter.categories, "filter.categories");
   filter.presets = ids(filter.presets, "filter.presets");
   const favorites = { enabled: false, mode: "user", namespace: "default", ...input.favorites };
+  if (typeof favorites.enabled !== "boolean") throw new LocalizedError("error.boolean", { name: "favorites.enabled" });
   if (!["user", "global"].includes(favorites.mode)) throw new LocalizedError("error.favorites_mode");
   if (typeof favorites.namespace !== "string" || !favorites.namespace.trim()) throw new LocalizedError("error.namespace");
-  if (input.remember?.controls && (typeof input.storage_key !== "string" || !input.storage_key.trim())) throw new LocalizedError("error.storage_key");
-  const controls = { brightness_input: "number", ...input.controls };
+  const remember = { controls: false, ...input.remember };
+  if (typeof remember.controls !== "boolean") throw new LocalizedError("error.boolean", { name: "remember.controls" });
+  if (remember.controls && (typeof input.storage_key !== "string" || !input.storage_key.trim())) throw new LocalizedError("error.storage_key");
+  const controls = { mode: false, shuffle: false, smart_shuffle: false, brightness: false, transition: false, interval: false, brightness_input: "number", ...input.controls };
+  for (const key of ["mode", "shuffle", "smart_shuffle", "brightness", "transition", "interval"]) {
+    if (typeof controls[key] !== "boolean") throw new LocalizedError("error.boolean", { name: `controls.${key}` });
+  }
   if (!["number", "slider"].includes(controls.brightness_input)) throw new LocalizedError("error.brightness_input");
   const display = { columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display };
-  for (const key of ["show_title", "center_titles", "group_by_category", "show_refresh"]) {
+  for (const key of ["show_title", "show_name", "show_category", "center_titles", "group_by_category", "show_refresh", "search", "category_selector", "favorites", "active_scene"]) {
     if (typeof display[key] !== "boolean") throw new LocalizedError("error.boolean", { name: `display.${key}` });
   }
   numberIn(display.columns, 1, 12, "display.columns");
-  return { ...input, targets: { entity_id: entityIds }, filter, scene: normalizeScene(input.scene), controls, favorites, display };
+  const debug = input.debug ?? false;
+  if (typeof debug !== "boolean") throw new LocalizedError("error.boolean", { name: "debug" });
+  return { ...input, targets: { entity_id: entityIds }, filter, scene: normalizeScene(input.scene), controls, favorites, remember, display, debug };
 }
 
 // src/adapters/scene-presets-adapter.js
@@ -1068,7 +1080,7 @@ var ScenePresetsAdapter = class {
       const seen = /* @__PURE__ */ new Set();
       for (const value of values) {
         assertRecord(value, kind);
-        if (seen.has(value.id)) throw new LocalizedError("error.duplicate", { kind: kind === "category" ? message("common.category") : "Preset", id: value.id });
+        if (seen.has(value.id)) throw new LocalizedError("error.duplicate", { kind: kind === "category" ? message("common.category") : message("common.preset"), id: value.id });
         seen.add(value.id);
       }
     }

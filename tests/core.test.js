@@ -14,10 +14,22 @@ const fake = (data = raw) => new ScenePresetsAdapter({services:{scene_presets:{a
 test('minimal config, target groups and validation', () => {
   assert.equal(normalizeConfig({targets:target}).scene.mode,'normal');
   assert.equal(normalizeConfig({targets:target}).display.show_title,true);
+  assert.equal(normalizeConfig({targets:target}).controls.mode,false);
   assert.equal(normalizeConfig({targets:target}).controls.brightness_input,'number');
+  assert.equal(normalizeConfig({targets:target}).remember.controls,false);
+  assert.equal(normalizeConfig({targets:target}).debug,false);
   assert.equal(normalizeConfig({targets:target,controls:{brightness_input:'slider'}}).controls.brightness_input,'slider');
   assert.deepEqual(normalizeConfig({targets:{entity_id:'group.lights'}}).targets.entity_id,['group.lights']);
   for (const config of [{targets:{entity_id:[]}}, {targets:{entity_id:['switch.x']}}, {targets:target,filter:{mode:'both'}}, {targets:target,remember:{controls:true}}, {targets:target,controls:{brightness_input:'dial'}}, {targets:target,display:{show_title:'yes'}}, {targets:target,scene:{brightness:{override:true,value:0}}}]) assert.throws(()=>normalizeConfig(config));
+  for (const key of ['mode','shuffle','smart_shuffle','brightness','transition','interval']) {
+    assert.throws(()=>normalizeConfig({targets:target,controls:{[key]:'false'}}), /boolean/);
+  }
+  for (const key of ['show_title','show_name','show_category','center_titles','group_by_category','show_refresh','search','category_selector','favorites','active_scene']) {
+    assert.throws(()=>normalizeConfig({targets:target,display:{[key]:'false'}}), /boolean/);
+  }
+  for (const config of [{targets:target,favorites:{enabled:'false'}}, {targets:target,remember:{controls:'false'},storage_key:'test'}, {targets:target,debug:'false'}]) {
+    assert.throws(()=>normalizeConfig(config), /boolean/);
+  }
 });
 test('exact normal payload and override omission', () => {
   const adapter = fake();

@@ -14,13 +14,15 @@ Examples: [README](../README.md).
 | scene.transition (normal) | {override:false,value:1} | 0–300 whole seconds |
 | scene.dynamic_transition | 60 | Dynamic mode; 0–300 whole seconds |
 | scene.interval | 120 | 1–300 whole seconds |
-| controls.* | false | mode, shuffle, smart_shuffle, brightness, transition, interval |
+| controls.mode / shuffle / smart_shuffle / brightness / transition / interval | false | Show the corresponding dashboard control |
+| controls.brightness_input | number | number / slider; used by the brightness dashboard control |
 | remember.controls | false | Optional Home Assistant user storage |
 | storage_key | empty | Required with remember.controls; stable card identifier |
 | favorites.enabled | false | Enable favorites |
 | favorites.mode | user | user / global; only administrators can write global favorites |
 | favorites.namespace | default | Favorites scope shared across cards |
 | display.columns | 3 | 1–12 |
+| display.show_title | true | Card heading |
 | display.show_name | true | Names |
 | display.show_category | false | Category names on tiles |
 | display.center_titles | false | Center scene titles in the built-in renderer |
