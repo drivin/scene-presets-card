@@ -12,7 +12,7 @@ A Home Assistant dashboard card for [Scene Presets](https://github.com/Hypfer/ha
 - Optional category headings, centered scene titles and a hideable refresh button.
 - Visual editor with collapsible sections and native Home Assistant entity selection.
 - Per-user or shared favorites, plus optional saved control values.
-- Dynamic scene status and stop controls.
+- Running dynamic scenes at the top of the card, with a visible Stop button for each scene.
 - Built-in rendering, with optional `custom:button-card` or another Lovelace child card.
 - Suggested by the card picker when adding a supported light entity.
 - English, German, Dutch and French, following the Home Assistant user's language.
@@ -58,14 +58,14 @@ For updates, use HACS and then reload the browser without cache.
 3. Add a dashboard resource with type **JavaScript module**:
 
    ```text
-   /local/scene-presets-card/scene-presets-card.js?v=1.2.0
+   /local/scene-presets-card/scene-presets-card.js?v=1.2.1
    ```
 
 4. Reload the dashboard page, edit the dashboard and add **Scene Presets**.
 
 Only the single JavaScript file is required. Translations and the editor are bundled; no build step or CDN is needed for installation. If you created the `www` directory for the first time, restart Home Assistant to make `/local` available.
 
-To update, replace the file, change the version parameter on the **existing** resource and reload the entire dashboard page. Register the resource only once. The editor footer should show **Scene Presets Card · 1.2.0**.
+To update, replace the file, change the version parameter on the **existing** resource and reload the entire dashboard page. Register the resource only once. The editor footer should show **Scene Presets Card · 1.2.1**.
 
 ## Quick start
 
@@ -76,7 +76,7 @@ targets:
     - light.living_room
 ```
 
-By default, the card shows all presets, uses normal scene mode and leaves brightness and transition values to the integration. You can configure everything in the visual editor.
+By default, the card shows all presets and running dynamic scenes, uses normal scene mode and leaves brightness and transition values to the integration. The active-scene panel can be hidden in the visual editor under **Appearance**. You can configure everything in the visual editor.
 
 ## Configuration example
 
@@ -171,7 +171,7 @@ Shuffle, Smart Shuffle, target resolution and conflicts between running dynamic 
 | `display.show_refresh` | `true` | Show the ↻ refresh button |
 | `display.active_scene` | `true` | Show running dynamic scenes at the top of the card with a Stop button for each scene; configurable in the visual editor |
 
-Refresh reloads preset metadata and, when `display.active_scene` is enabled, the dynamic scene status. **It does not apply a scene.** Hiding the button keeps the initial load and status updates after this card's scene actions.
+Refresh reloads preset metadata and, when `display.active_scene` is enabled, the dynamic scene status. The panel shows a dated snapshot from the integration, including scenes started elsewhere. Each Stop button stops only its named dynamic scene. **Refresh does not apply a scene.** Hiding the refresh button keeps the initial load and status updates after this card's scene actions.
 
 ### Favorites and saved controls
 
@@ -219,7 +219,7 @@ Contributions are welcome: see [translation development](docs/LOCALIZATION.md).
 
 **Preset endpoint unavailable / HTTP 404:** first check that the Scene Presets integration is activated under Devices & services. If it is already configured, check whether it loaded successfully and whether a reverse proxy blocks its asset path. Retry in the editor or use ↻.
 
-**The editor or card still looks old:** replace the bundled JavaScript file, update the resource URL to `?v=1.2.0` and reload the entire page. Earlier releases used separate source imports; the current bundle contains everything. Check the version in the editor footer or enable `debug: true`.
+**The editor or card still looks old:** replace the bundled JavaScript file, update the resource URL to `?v=1.2.1` and reload the entire page. Earlier releases used separate source imports; the current bundle contains everything. Check the version in the editor footer or enable `debug: true`.
 
 **A category seems to be missing:** it needs at least one preset allowed by this card's include/exclude configuration. Empty category sections are also hidden after search and favorites filtering.
 

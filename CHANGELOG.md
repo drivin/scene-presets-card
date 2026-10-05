@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## 1.2.1 — 2026-10-05
+
+### Changed
+- Running dynamic scenes now appear directly below the card header by default, with a visible Stop button for each scene. The visual editor can hide the panel through `display.active_scene`.
 
 ### Fixed
 - Configuration validation now rejects non-boolean values for all documented boolean options instead of treating strings such as `"false"` as enabled.

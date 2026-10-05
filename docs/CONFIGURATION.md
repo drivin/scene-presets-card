@@ -62,6 +62,6 @@ display:
 
 The defaults remain left-aligned titles, a single combined overview and a visible refresh icon. Centering applies to the built-in tile renderer; external custom cards determine text alignment through their own configuration. Category sections work with both renderer types. Only categories with currently visible presets are displayed, including after applying search and favorite filters. The existing `show_category` option additionally shows the category name on each tile.
 
-The active-scene panel appears directly below the card header by default. It shows running dynamic scenes reported by the integration and offers a Stop button for each one. It is a dated snapshot.
+The active-scene panel appears directly below the card header by default. It shows running dynamic scenes reported by the integration, including scenes started elsewhere, and offers a Stop button for each one. The panel is a dated snapshot. Normal scenes are one-time actions and are not reported as running by the integration.
 
 ↻ reloads the preset collection, checks its fingerprint and, when `display.active_scene:true`, retrieves the current dynamic status. It does not apply a scene. With `show_refresh:false`, only the button is hidden; the initial load and status updates following this card's own scene actions remain enabled. External scene changes then become visible the next time the card loads.
