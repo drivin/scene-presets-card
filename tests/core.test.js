@@ -14,6 +14,8 @@ const fake = (data = raw) => new ScenePresetsAdapter({services:{scene_presets:{a
 test('minimal config, target groups and validation', () => {
   assert.equal(normalizeConfig({targets:target}).scene.mode,'normal');
   assert.equal(normalizeConfig({targets:target}).display.show_title,true);
+  assert.equal(normalizeConfig({targets:target}).display.active_scene,true);
+  assert.equal(normalizeConfig({targets:target,display:{active_scene:false}}).display.active_scene,false);
   assert.equal(normalizeConfig({targets:target}).controls.mode,false);
   assert.equal(normalizeConfig({targets:target}).controls.brightness_input,'number');
   assert.equal(normalizeConfig({targets:target}).remember.controls,false);

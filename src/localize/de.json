@@ -33,6 +33,7 @@
   "status.snapshot": "Stand: {time} · Snapshot",
   "status.refresh": ", über ↻ aktualisieren",
   "status.parameters": "Intervall: {interval} s · Übergang: {transition} s",
+  "status.stop_scene": "{name} stoppen",
   "editor.intro": "Lampen einmal wählen, Presets eingrenzen und das Scene-Verhalten festlegen.",
   "editor.search_placeholder": "Name, Kategorie oder ID suchen",
   "editor.search_presets": "Presetauswahl durchsuchen",

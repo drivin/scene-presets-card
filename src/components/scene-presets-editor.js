@@ -127,7 +127,7 @@ export class ScenePresetsEditor extends HTMLElement {
       this.text(this.t('editor.title'), 'title', c.title), field(this.t('editor.columns'), el('input', {type:'number', min:1, max:12, value:c.display?.columns ?? 3,
         onchange:e => { if (e.target.reportValidity()) this.change('display.columns', Number(e.target.value)); }})),
       ...Object.entries({show_title:this.t('editor.show_title'),show_name:this.t('editor.show_name'),center_titles:this.t('editor.center_titles'),group_by_category:this.t('editor.group_by_category'),show_category:this.t('editor.show_category'),show_refresh:this.t('editor.show_refresh'),search:this.t('editor.show_search'),category_selector:this.t('editor.category_selector'),favorites:this.t('editor.show_favorites'),active_scene:this.t('editor.active_scene')})
-        .map(([key,label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ['show_title','show_name','favorites','show_refresh'].includes(key))),
+        .map(([key,label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ['show_title','show_name','favorites','show_refresh','active_scene'].includes(key))),
       el('p', {class: 'help', text: this.t('editor.refresh_help')}),
     ]));
     root.append(el('h3', {class: 'group-title', text: this.t('editor.optional')}));

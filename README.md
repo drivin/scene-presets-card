@@ -169,6 +169,7 @@ Shuffle, Smart Shuffle, target resolution and conflicts between running dynamic 
 | `display.group_by_category` | `false` | Separate visible presets with category headings |
 | `display.show_category` | `false` | Also show the category name on each tile |
 | `display.show_refresh` | `true` | Show the ↻ refresh button |
+| `display.active_scene` | `true` | Show running dynamic scenes at the top of the card with a Stop button for each scene; configurable in the visual editor |
 
 Refresh reloads preset metadata and, when `display.active_scene` is enabled, the dynamic scene status. **It does not apply a scene.** Hiding the button keeps the initial load and status updates after this card's scene actions.
 

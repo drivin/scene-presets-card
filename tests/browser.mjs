@@ -54,7 +54,7 @@ try {
         if(msg.type.includes('/set_')){stored.set(msg.key,msg.value);subscribers.get(msg.key)?.forEach(cb=>cb({value:msg.value}));return;}
         return {value:stored.get(msg.key)??null};
       },connection:{subscribeMessage:async(cb,msg)=>{const set=subscribers.get(msg.key)||new Set();set.add(cb);subscribers.set(msg.key,set);cb({value:stored.get(msg.key)??null});return()=>set.delete(cb);}}};
-    window.config={type:'custom:scene-presets-card',targets:{entity_id:['light.one']},favorites:{enabled:true},display:{search:true,category_selector:true,active_scene:true},controls:{mode:true,brightness:true,transition:true,interval:true}};
+    window.config={type:'custom:scene-presets-card',targets:{entity_id:['light.one']},favorites:{enabled:true},display:{search:true,category_selector:true},controls:{mode:true,brightness:true,transition:true,interval:true}};
     for(let i=0;i<2;i++){const card=document.createElement('scene-presets-card');card.setConfig(config);card.hass=hassMock;document.body.append(card);}
   });
   const card=page.locator('scene-presets-card').first();
@@ -63,6 +63,13 @@ try {
   await page.waitForFunction(()=>document.querySelectorAll('scene-presets-card')[1].shadowRoot.querySelectorAll('.tile').length===2);
   assert.equal(requests,1,'shared discovery request');
   assert.equal(await card.locator('.tile').count(),2);
+  await card.locator('#active .active-scene').waitFor();
+  assert.equal(await card.locator('ha-card').evaluate(node=>[...node.children].findIndex(child=>child.id==='active') < [...node.children].findIndex(child=>child.id==='controls')),true);
+  assert.equal(await card.getByRole('button',{name:'Sunset stoppen'}).count(),1);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,display:{...config.display,active_scene:false}}));
+  assert.equal(await card.locator('#active section').count(),0);
+  await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig(config));
+  await card.locator('#active .active-scene').waitFor();
   assert.equal(await card.locator('.name').first().evaluate(node=>getComputedStyle(node).textAlign),'left');
   assert.equal(await card.locator('.preset-group').count(),0);
   assert.equal(await card.locator('.toolbar h2').count(),1);
@@ -95,9 +102,8 @@ try {
   await card.getByRole('button',{name:'Sunset anwenden',exact:true}).click();
   assert.equal(await page.evaluate(()=>calls.at(-1)[1]),'start_dynamic_scene');
   assert.equal(await card.locator('.tile.active').count(),1);
-  await card.getByText('Sunset',{exact:true}).last().click();
-  await card.getByRole('button',{name:'Stop',exact:true}).click();
-  assert.equal(await page.evaluate(()=>calls.at(-1)[1]),'stop_dynamic_scene');
+  await card.getByRole('button',{name:'Sunset stoppen'}).click();
+  assert.deepEqual(await page.evaluate(()=>calls.at(-1).slice(1)),['stop_dynamic_scene',{id:'dyn'}]);
 
   // Navigation is based on config-eligible children, and resets a removed category.
   await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,filter:{mode:'include',presets:['x']}}));
@@ -160,6 +166,7 @@ try {
   assert.deepEqual(await page.evaluate(()=>[edited.scene.transition,edited.scene.dynamic_transition]),[{override:true,value:7},33]);
   await editor.locator('details[data-section="scene"] > summary').click();
   await editor.locator('details[data-section="display"] > summary').click();
+  assert.equal(await editor.getByRole('checkbox',{name:'Aktive Dynamic Scenes anzeigen',exact:true}).isChecked(),true);
   await editor.getByLabel('Titel',{exact:true}).fill('Edited');
   await editor.getByLabel('Titel',{exact:true}).press('Tab');
   assert.deepEqual(await page.evaluate(()=>[edited.unknown.keep,edited.preset_card.custom_property_xyz,edited.title]),[42,7,'Edited']);
@@ -235,7 +242,8 @@ try {
   await editor.getByRole('checkbox',{name:'Szenentitel zentrieren',exact:true}).check();
   await editor.getByRole('checkbox',{name:'Szenen nach Kategorien unterteilen',exact:true}).check();
   await editor.getByRole('checkbox',{name:'Aktualisierungssymbol anzeigen',exact:true}).uncheck();
-  assert.deepEqual(await page.evaluate(()=>[edited.display.center_titles,edited.display.group_by_category,edited.display.show_refresh,edited.preset_card.custom_property_xyz]),[true,true,false,7]);
+  await editor.getByRole('checkbox',{name:'Aktive Dynamic Scenes anzeigen',exact:true}).uncheck();
+  assert.deepEqual(await page.evaluate(()=>[edited.display.center_titles,edited.display.group_by_category,edited.display.show_refresh,edited.display.active_scene,edited.preset_card.custom_property_xyz]),[true,true,false,false,7]);
 
   // Grouping follows visible presets and never creates empty category sections.
   await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,display:{...config.display,center_titles:true,group_by_category:true,show_refresh:false}}));

@@ -33,6 +33,7 @@
   "status.snapshot": "Stand: {time} · Momentopname",
   "status.refresh": ", vernieuw met ↻",
   "status.parameters": "Interval: {interval} s · Overgang: {transition} s",
+  "status.stop_scene": "{name} stoppen",
   "editor.intro": "Kies eenmaal de lampen, selecteer presets en stel het scènegedrag in.",
   "editor.search_placeholder": "Zoek op naam, categorie of ID",
   "editor.search_presets": "Presetselectie doorzoeken",

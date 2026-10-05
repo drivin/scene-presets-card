@@ -242,6 +242,7 @@ var en_default = {
   "status.snapshot": "As of {time} \xB7 Snapshot",
   "status.refresh": ", refresh with \u21BB",
   "status.parameters": "Interval: {interval} s \xB7 Transition: {transition} s",
+  "status.stop_scene": "Stop {name}",
   "editor.intro": "Choose lights once, select presets and configure scene behavior.",
   "editor.search_placeholder": "Search by name, category or ID",
   "editor.search_presets": "Search preset selection",
@@ -402,6 +403,7 @@ var de_default = {
   "status.snapshot": "Stand: {time} \xB7 Snapshot",
   "status.refresh": ", \xFCber \u21BB aktualisieren",
   "status.parameters": "Intervall: {interval} s \xB7 \xDCbergang: {transition} s",
+  "status.stop_scene": "{name} stoppen",
   "editor.intro": "Lampen einmal w\xE4hlen, Presets eingrenzen und das Scene-Verhalten festlegen.",
   "editor.search_placeholder": "Name, Kategorie oder ID suchen",
   "editor.search_presets": "Presetauswahl durchsuchen",
@@ -562,6 +564,7 @@ var nl_default = {
   "status.snapshot": "Stand: {time} \xB7 Momentopname",
   "status.refresh": ", vernieuw met \u21BB",
   "status.parameters": "Interval: {interval} s \xB7 Overgang: {transition} s",
+  "status.stop_scene": "{name} stoppen",
   "editor.intro": "Kies eenmaal de lampen, selecteer presets en stel het sc\xE8negedrag in.",
   "editor.search_placeholder": "Zoek op naam, categorie of ID",
   "editor.search_presets": "Presetselectie doorzoeken",
@@ -722,6 +725,7 @@ var fr_default = {
   "status.snapshot": "\xC9tat \xE0 {time} \xB7 Instantan\xE9",
   "status.refresh": ", actualiser avec \u21BB",
   "status.parameters": "Intervalle : {interval} s \xB7 Transition : {transition} s",
+  "status.stop_scene": "Arr\xEAter {name}",
   "editor.intro": "Choisissez les lumi\xE8res, s\xE9lectionnez les pr\xE9r\xE9glages et d\xE9finissez le comportement des sc\xE8nes.",
   "editor.search_placeholder": "Rechercher par nom, cat\xE9gorie ou identifiant",
   "editor.search_presets": "Rechercher dans les pr\xE9r\xE9glages",
@@ -1036,7 +1040,7 @@ function normalizeConfig(input) {
     if (typeof controls[key] !== "boolean") throw new LocalizedError("error.boolean", { name: `controls.${key}` });
   }
   if (!["number", "slider"].includes(controls.brightness_input)) throw new LocalizedError("error.brightness_input");
-  const display = { columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display };
+  const display = { columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: true, ...input.display };
   for (const key of ["show_title", "show_name", "show_category", "center_titles", "group_by_category", "show_refresh", "search", "category_selector", "favorites", "active_scene"]) {
     if (typeof display[key] !== "boolean") throw new LocalizedError("error.boolean", { name: `display.${key}` });
   }
@@ -1407,6 +1411,7 @@ var styles = `
   .tile .favorite{position:absolute;right:4px;top:4px;z-index:2;padding:4px 7px}.tile .badge{position:absolute;left:4px;top:4px;background:var(--card-background-color,#fff);border-radius:4px;padding:2px 5px;pointer-events:none}
   .child{pointer-events:none}.child-action{position:absolute;inset:0;opacity:0}.placeholder{display:grid;place-items:center;aspect-ratio:1.45;font-size:32px;background:linear-gradient(130deg,#617b8c,#9b7c92)}
   .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0 16px;margin:12px 0}
+  .active-scene{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:12px 0}.active-scene details{min-width:0;margin:8px 0;overflow-wrap:anywhere}.active-scene button{flex:none}
   details{margin:12px 0}summary{cursor:pointer;font-weight:500}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
 `;
 
@@ -1548,10 +1553,11 @@ function activeScenePanel(scenes, presets, hass, timestamp, stop, canStop, showR
   root.append(el("h3", { text: t("status.title") }), el("p", { class: "notice", text: timestamp ? t("status.snapshot", { time: new Date(timestamp).toLocaleTimeString(haLanguage(hass).replaceAll("_", "-")) }) + (showRefresh ? t("status.refresh") : "") : t("status.unavailable") }));
   if (timestamp && !scenes.length) root.append(el("p", { text: t("status.empty") }));
   for (const scene of scenes) {
-    const details = el("details", {}, [el("summary", { text: presets.find((p) => p.id === scene.presetId)?.name ?? scene.presetId })]);
+    const name = presets.find((p) => p.id === scene.presetId)?.name ?? scene.presetId;
+    const details = el("details", {}, [el("summary", { text: name })]);
     for (const id of scene.targets) details.append(el("div", { text: `${hass.states?.[id]?.state === "on" ? "\u25CF" : "\u25CB"} ${hass.states?.[id]?.attributes?.friendly_name ?? id}` }));
-    details.append(el("p", { text: t("status.parameters", { interval: scene.interval, transition: scene.transition }) }), button(t("common.stop"), () => stop(scene.id), { disabled: !canStop }));
-    root.append(details);
+    details.append(el("p", { text: t("status.parameters", { interval: scene.interval, transition: scene.transition }) }));
+    root.append(el("div", { class: "active-scene" }, [details, button(t("common.stop"), () => stop(scene.id), { disabled: !canStop, "aria-label": t("status.stop_scene", { name }) })]));
   }
   return root;
 }
@@ -1822,7 +1828,7 @@ var ScenePresetsCard = class extends HTMLElement {
     if (this.config.display.show_title) header.append(el("h2", { text: this.config.title || "Scene Presets" }));
     if (this.config.display.show_refresh) header.append(button("\u21BB", () => this.refresh(), { "aria-label": this.t("card.refresh"), title: this.t("card.refresh_help"), disabled: !this.provider }));
     if (header.childElementCount) card.append(header);
-    card.append(el("div", { id: "notices", role: "status", "aria-live": "polite" }), el("div", { id: "controls" }));
+    card.append(el("div", { id: "notices", role: "status", "aria-live": "polite" }), el("div", { id: "active" }), el("div", { id: "controls" }));
     const filters = el("div", { class: "toolbar" });
     if (this.config.display.search) filters.append(el("input", { type: "search", placeholder: this.t("card.search_placeholder"), "aria-label": this.t("card.search"), value: this.runtime.search || "", oninput: (e) => {
       const value = e.target.value;
@@ -1847,7 +1853,7 @@ var ScenePresetsCard = class extends HTMLElement {
       e.currentTarget.setAttribute("aria-pressed", String(this.runtime.favorites));
       this.renderGrid();
     }, { "aria-pressed": String(!!this.runtime.favorites) }));
-    card.append(filters, el("div", { id: "presets" }), el("div", { id: "active" }));
+    card.append(filters, el("div", { id: "presets" }));
     if (this.config.debug && this.compatibility) card.append(el("details", {}, [el("summary", { text: this.t("common.debug") }), el("pre", { text: JSON.stringify({
       version: VERSION,
       capabilities: this.compatibility.getCapabilities(),
@@ -2034,7 +2040,7 @@ var ScenePresetsEditor = class extends HTMLElement {
           if (e.target.reportValidity()) this.change("display.columns", Number(e.target.value));
         }
       })),
-      ...Object.entries({ show_title: this.t("editor.show_title"), show_name: this.t("editor.show_name"), center_titles: this.t("editor.center_titles"), group_by_category: this.t("editor.group_by_category"), show_category: this.t("editor.show_category"), show_refresh: this.t("editor.show_refresh"), search: this.t("editor.show_search"), category_selector: this.t("editor.category_selector"), favorites: this.t("editor.show_favorites"), active_scene: this.t("editor.active_scene") }).map(([key, label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ["show_title", "show_name", "favorites", "show_refresh"].includes(key))),
+      ...Object.entries({ show_title: this.t("editor.show_title"), show_name: this.t("editor.show_name"), center_titles: this.t("editor.center_titles"), group_by_category: this.t("editor.group_by_category"), show_category: this.t("editor.show_category"), show_refresh: this.t("editor.show_refresh"), search: this.t("editor.show_search"), category_selector: this.t("editor.category_selector"), favorites: this.t("editor.show_favorites"), active_scene: this.t("editor.active_scene") }).map(([key, label]) => this.check(label, `display.${key}`, c.display?.[key] ?? ["show_title", "show_name", "favorites", "show_refresh", "active_scene"].includes(key))),
       el("p", { class: "help", text: this.t("editor.refresh_help") })
     ]));
     root.append(el("h3", { class: "group-title", text: this.t("editor.optional") }));

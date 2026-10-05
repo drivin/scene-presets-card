@@ -33,6 +33,7 @@
   "status.snapshot": "État à {time} · Instantané",
   "status.refresh": ", actualiser avec ↻",
   "status.parameters": "Intervalle : {interval} s · Transition : {transition} s",
+  "status.stop_scene": "Arrêter {name}",
   "editor.intro": "Choisissez les lumières, sélectionnez les préréglages et définissez le comportement des scènes.",
   "editor.search_placeholder": "Rechercher par nom, catégorie ou identifiant",
   "editor.search_presets": "Rechercher dans les préréglages",

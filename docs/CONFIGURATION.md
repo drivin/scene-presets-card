@@ -31,7 +31,7 @@ Examples: [README](../README.md).
 | display.search | false | Name/category search with a 180 ms debounce |
 | display.category_selector | false | Runtime category selection |
 | display.favorites | true | Icons and filter when favorites are enabled |
-| display.active_scene | false | Status panel and active-state highlighting |
+| display.active_scene | true | Show running dynamic scenes above the controls, with a Stop button for each scene, and highlight their presets |
 | preset_card.type | internal | internal / custom:button-card / another child card |
 | preset_card.template | empty | Template interpreted by the renderer |
 | debug | false | Capabilities, cache, item count, renderer and missing IDs |
@@ -50,15 +50,18 @@ Language: the card and editor use the Home Assistant user's language. English is
 
 ## Display options
 
-Under **4 · Appearance** in the editor, scene titles can be centered, scenes can be divided by category headings, and the refresh icon can be hidden:
+Under **4 · Appearance** in the editor, scene titles can be centered, scenes can be divided by category headings, the refresh icon can be hidden, and the active-scene panel can be shown or hidden:
 
 ```yaml
 display:
   center_titles: true
   group_by_category: true
   show_refresh: false
+  active_scene: false
 ```
 
 The defaults remain left-aligned titles, a single combined overview and a visible refresh icon. Centering applies to the built-in tile renderer; external custom cards determine text alignment through their own configuration. Category sections work with both renderer types. Only categories with currently visible presets are displayed, including after applying search and favorite filters. The existing `show_category` option additionally shows the category name on each tile.
+
+The active-scene panel appears directly below the card header by default. It shows running dynamic scenes reported by the integration and offers a Stop button for each one. It is a dated snapshot.
 
 ↻ reloads the preset collection, checks its fingerprint and, when `display.active_scene:true`, retrieves the current dynamic status. It does not apply a scene. With `show_refresh:false`, only the button is hidden; the initial load and status updates following this card's own scene actions remain enabled. External scene changes then become visible the next time the card loads.

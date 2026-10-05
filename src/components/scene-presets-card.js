@@ -164,7 +164,7 @@ export class ScenePresetsCard extends HTMLElement {
     if (this.config.display.show_title) header.append(el('h2', {text: this.config.title || 'Scene Presets'}));
     if (this.config.display.show_refresh) header.append(button('↻', () => this.refresh(), {'aria-label': this.t('card.refresh'), title: this.t('card.refresh_help'), disabled: !this.provider}));
     if (header.childElementCount) card.append(header);
-    card.append(el('div', {id: 'notices', role: 'status', 'aria-live': 'polite'}), el('div', {id: 'controls'}));
+    card.append(el('div', {id: 'notices', role: 'status', 'aria-live': 'polite'}), el('div', {id: 'active'}), el('div', {id: 'controls'}));
     const filters = el('div', {class: 'toolbar'});
     if (this.config.display.search) filters.append(el('input', {type: 'search', placeholder: this.t('card.search_placeholder'), 'aria-label': this.t('card.search'), value: this.runtime.search || '', oninput: e => {
       const value = e.target.value; clearTimeout(this.searchTimer); this.searchTimer = setTimeout(() => { this.runtime.search = value; this.renderGrid(); }, 180);
@@ -177,7 +177,7 @@ export class ScenePresetsCard extends HTMLElement {
     if (this.config.favorites.enabled && this.config.display.favorites) filters.append(button(`${this.runtime.favorites ? '★' : '☆'} ${this.t('common.favorites')}`, e => {
       this.runtime.favorites = !this.runtime.favorites; e.currentTarget.textContent = `${this.runtime.favorites ? '★' : '☆'} ${this.t('common.favorites')}`; e.currentTarget.setAttribute('aria-pressed', String(this.runtime.favorites)); this.renderGrid();
     }, {'aria-pressed': String(!!this.runtime.favorites)}));
-    card.append(filters, el('div', {id: 'presets'}), el('div', {id: 'active'}));
+    card.append(filters, el('div', {id: 'presets'}));
     if (this.config.debug && this.compatibility) card.append(el('details', {}, [el('summary', {text: this.t('common.debug')}), el('pre', {text: JSON.stringify({
       version: VERSION, capabilities: this.compatibility.getCapabilities(), presets: this.data?.presets.length, categories: this.data?.categories.length,
       fingerprint: this.data?.sourceFingerprint.length === 64 ? this.data.sourceFingerprint : 'canonical-content', cache: this.data?.status,

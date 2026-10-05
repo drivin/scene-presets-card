@@ -38,7 +38,7 @@ export function normalizeConfig(input) {
     if (typeof controls[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: `controls.${key}`});
   }
   if (!['number','slider'].includes(controls.brightness_input)) throw new LocalizedError('error.brightness_input');
-  const display = {columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: false, ...input.display};
+  const display = {columns: 3, show_title: true, show_name: true, show_category: false, center_titles: false, group_by_category: false, show_refresh: true, search: false, category_selector: false, favorites: true, active_scene: true, ...input.display};
   for (const key of ['show_title', 'show_name', 'show_category', 'center_titles', 'group_by_category', 'show_refresh', 'search', 'category_selector', 'favorites', 'active_scene']) {
     if (typeof display[key] !== 'boolean') throw new LocalizedError('error.boolean', {name: `display.${key}`});
   }
