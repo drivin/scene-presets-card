@@ -31,7 +31,7 @@ Examples: [README](../README.md).
 | display.search | false | Name/category search with a 180 ms debounce |
 | display.category_selector | false | Runtime category selection |
 | display.favorites | true | Icons and filter when favorites are enabled |
-| display.active_scene | true | Show running dynamic scenes above the controls, with a Stop button for each scene, and highlight their presets |
+| display.active_scene | true | Show running dynamic scenes as image tiles above the controls; tap a tile to stop it. Highlight their presets in the grid |
 | preset_card.type | internal | internal / custom:button-card / another child card |
 | preset_card.template | empty | Template interpreted by the renderer |
 | debug | false | Capabilities, cache, item count, renderer and missing IDs |
@@ -62,6 +62,6 @@ display:
 
 The defaults remain left-aligned titles, a single combined overview and a visible refresh icon. Centering applies to the built-in tile renderer; external custom cards determine text alignment through their own configuration. Category sections work with both renderer types. Only categories with currently visible presets are displayed, including after applying search and favorite filters. The existing `show_category` option additionally shows the category name on each tile.
 
-The active-scene panel appears directly below the card header by default. It shows running dynamic scenes reported by the integration, including scenes started elsewhere, and offers a Stop button for each one. The panel is a dated snapshot. Normal scenes are one-time actions and are not reported as running by the integration.
+The active-scene panel appears directly below the card header by default. It shows running dynamic scenes reported by the integration, including scenes started elsewhere, as image tiles with names and timing information. Tap an active tile to stop that specific scene. The panel refreshes about every 30 seconds while the card is open and marks the time of the last successful status check. Normal scenes are one-time actions and are not reported as running by the integration.
 
-↻ reloads the preset collection, checks its fingerprint and, when `display.active_scene:true`, retrieves the current dynamic status. It does not apply a scene. With `show_refresh:false`, only the button is hidden; the initial load and status updates following this card's own scene actions remain enabled. External scene changes then become visible the next time the card loads.
+↻ reloads the preset collection, checks its fingerprint and, when `display.active_scene:true`, retrieves the current dynamic status. It does not apply a scene. With `show_refresh:false`, only the button is hidden; initial loading, status updates following this card's own scene actions and periodic status checks remain enabled.

@@ -63,13 +63,17 @@ try {
   await page.waitForFunction(()=>document.querySelectorAll('scene-presets-card')[1].shadowRoot.querySelectorAll('.tile').length===2);
   assert.equal(requests,1,'shared discovery request');
   assert.equal(await card.locator('.tile').count(),2);
-  await card.locator('#active .active-scene').waitFor();
+  await card.locator('#active .active-scene-tile').waitFor();
   assert.equal(await card.locator('ha-card').evaluate(node=>[...node.children].findIndex(child=>child.id==='active') < [...node.children].findIndex(child=>child.id==='controls')),true);
   assert.equal(await card.getByRole('button',{name:'Sunset stoppen'}).count(),1);
+  assert.match(await card.locator('.active-scene-tile').innerText(),/Sunset/);
+  assert.match(await card.locator('.active-scene-tile').innerText(),/Stop/);
+  await page.waitForFunction(()=>document.querySelector('scene-presets-card').statusTimer != null);
   await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig({...config,display:{...config.display,active_scene:false}}));
   assert.equal(await card.locator('#active section').count(),0);
+  assert.equal(await card.evaluate(element=>element.statusTimer),null);
   await page.evaluate(()=>document.querySelector('scene-presets-card').setConfig(config));
-  await card.locator('#active .active-scene').waitFor();
+  await card.locator('#active .active-scene-tile').waitFor();
   assert.equal(await card.locator('.name').first().evaluate(node=>getComputedStyle(node).textAlign),'left');
   assert.equal(await card.locator('.preset-group').count(),0);
   assert.equal(await card.locator('.toolbar h2').count(),1);
@@ -166,7 +170,7 @@ try {
   assert.deepEqual(await page.evaluate(()=>[edited.scene.transition,edited.scene.dynamic_transition]),[{override:true,value:7},33]);
   await editor.locator('details[data-section="scene"] > summary').click();
   await editor.locator('details[data-section="display"] > summary').click();
-  assert.equal(await editor.getByRole('checkbox',{name:'Aktive Dynamic Scenes anzeigen',exact:true}).isChecked(),true);
+  assert.equal(await editor.getByRole('checkbox',{name:'Aktive Szenenkacheln oben anzeigen',exact:true}).isChecked(),true);
   await editor.getByLabel('Titel',{exact:true}).fill('Edited');
   await editor.getByLabel('Titel',{exact:true}).press('Tab');
   assert.deepEqual(await page.evaluate(()=>[edited.unknown.keep,edited.preset_card.custom_property_xyz,edited.title]),[42,7,'Edited']);
@@ -242,7 +246,7 @@ try {
   await editor.getByRole('checkbox',{name:'Szenentitel zentrieren',exact:true}).check();
   await editor.getByRole('checkbox',{name:'Szenen nach Kategorien unterteilen',exact:true}).check();
   await editor.getByRole('checkbox',{name:'Aktualisierungssymbol anzeigen',exact:true}).uncheck();
-  await editor.getByRole('checkbox',{name:'Aktive Dynamic Scenes anzeigen',exact:true}).uncheck();
+  await editor.getByRole('checkbox',{name:'Aktive Szenenkacheln oben anzeigen',exact:true}).uncheck();
   assert.deepEqual(await page.evaluate(()=>[edited.display.center_titles,edited.display.group_by_category,edited.display.show_refresh,edited.display.active_scene,edited.preset_card.custom_property_xyz]),[true,true,false,false,7]);
 
   // Grouping follows visible presets and never creates empty category sections.
@@ -296,6 +300,7 @@ try {
   await page.waitForFunction(expected=>document.querySelector('#preview scene-presets-card').shadowRoot.querySelectorAll('.tile').length===expected,previewData.presets.length);
   await preview.locator('img').evaluateAll(images=>Promise.all(images.map(img=>img.complete ? undefined : new Promise(resolve=>img.addEventListener('load',resolve,{once:true})))));
   assert.equal(await preview.locator('.tile img').count(),previewData.presets.length,'README preview uses real preset images');
+  assert.equal(await preview.locator('.active-scene-tile img').count(),1,'active scene uses its preset image');
   assert.equal(await preview.locator('.preset-group').count(),previewData.categories.length,'README preview shows configured category groups');
   await page.locator('#preview').screenshot({path:root+'tests/browser-preview.png'});
 

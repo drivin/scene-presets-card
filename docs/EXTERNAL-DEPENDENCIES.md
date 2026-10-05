@@ -52,7 +52,7 @@ Stop: `hass.callService('scene_presets','stop_dynamic_scene',{id:sceneUuid})`.
 Status: `hass.callWS({type:'scene_presets/get_dynamic_scenes'})` returns
 `{dynamic_scenes:[{id,running,interval,parameters:{preset_id,light_entity_ids,
 brightness,transition,shuffle}}]}`. No status subscription has been verified.
-Status refreshes on load, after the card's own actions and through the refresh button.
+Status refreshes on load, after the card's own actions, through the refresh button and about every 30 seconds while the card is open, matching the integration's UI interval.
 The display is an explicitly dated snapshot, not an inferred live state.
 
 Targets are passed in the service data object rather than as a Home Assistant service

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2 — 2026-10-05
+
+### Changed
+- Active dynamic scenes now appear as image tiles above the preset grid. Tapping a tile stops that scene, matching the integration's UI.
+- Dynamic scene status refreshes about every 30 seconds while the card is open.
+
 ## 1.2.1 — 2026-10-05
 
 ### Changed

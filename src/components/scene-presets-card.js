@@ -18,7 +18,7 @@ import {activeScenePanel} from './active-scene-panel.js';
 export class ScenePresetsCard extends HTMLElement {
   constructor() {
     super(); this.attachShadow({mode: 'open'}); this.renderer = new LovelaceCardAdapter();
-    this.runtime = {}; this.favorites = []; this.active = []; this.notices = new Map(); this.generation = 0;
+    this.runtime = {}; this.favorites = []; this.active = []; this.stopping = new Set(); this.notices = new Map(); this.generation = 0; this.statusRequest = 0;
   }
   static get version() { return VERSION; }
   static getConfigElement() { return document.createElement('scene-presets-editor'); }
@@ -44,10 +44,10 @@ export class ScenePresetsCard extends HTMLElement {
   disconnectedCallback() { this.cleanup(); }
   cleanup() {
     this.generation++; this.started = false; this.unsubscribe?.(); this.unsubscribe = null;
-    this.favoriteStore?.close(); clearTimeout(this.searchTimer);
+    this.favoriteStore?.close(); clearTimeout(this.searchTimer); clearInterval(this.statusTimer); this.statusTimer = null;
   }
   restart() {
-    this.cleanup(); this.notices.clear(); this.favorites = []; this.active = []; this.timestamp = null;
+    this.cleanup(); this.notices.clear(); this.favorites = []; this.active = []; this.stopping.clear(); this.timestamp = null;
     this.favoriteStore = null; this.runtimeStore = null; this.favoriteReady = false; this.data = null;
     this.render(); this.start();
   }
@@ -60,7 +60,13 @@ export class ScenePresetsCard extends HTMLElement {
     this.unsubscribe = this.provider.subscribe(data => { if (generation === this.generation) { this.data = data; this.render(); } });
     this.render();
     await Promise.allSettled([this.loadPresets(false, generation), this.loadFavorites(generation), this.loadRuntime(generation), this.refreshStatus(generation)]);
-    if (generation === this.generation) this.render();
+    if (generation === this.generation) {
+      this.render();
+      if (this.config.display.active_scene) this.statusTimer = setInterval(async () => {
+        await this.refreshStatus(generation);
+        if (generation === this.generation) { this.renderActive(); this.renderGrid(); }
+      }, 30_000);
+    }
   }
   notice(key, message) { if (message) this.notices.set(key, message); else this.notices.delete(key); this.renderNotices(); }
   async loadPresets(force, generation = this.generation) {
@@ -87,12 +93,13 @@ export class ScenePresetsCard extends HTMLElement {
   }
   async refreshStatus(generation = this.generation) {
     if (!this.config.display.active_scene) return;
+    const request = ++this.statusRequest;
     try {
       const scenes = await this.adapter.getActiveDynamicScenes();
-      if (generation !== this.generation) return;
+      if (generation !== this.generation || request !== this.statusRequest) return;
       this.active = scenes.filter(s => s.running); this.timestamp = Date.now(); this.notice('status', null);
     } catch (error) {
-      if (generation !== this.generation) return;
+      if (generation !== this.generation || request !== this.statusRequest) return;
       this.active = []; this.timestamp = null; this.notice('status', message('notice.status', {error}));
     }
   }
@@ -115,8 +122,11 @@ export class ScenePresetsCard extends HTMLElement {
     finally { this.busy = false; }
   }
   async stop(id) {
+    if (this.stopping.has(id)) return;
+    this.stopping.add(id); this.renderActive();
     try { await this.adapter.stopDynamicScene(id); await this.refreshStatus(); this.renderActive(); this.renderGrid(); this.notice('action', null); }
     catch (error) { this.notice('action', message('notice.stop', {error})); }
+    finally { this.stopping.delete(id); this.renderActive(); }
   }
   async toggleFavorite(preset) {
     try { this.favorites = await this.favoriteStore.toggle(preset.id); this.renderGrid(); }
@@ -142,7 +152,7 @@ export class ScenePresetsCard extends HTMLElement {
   renderActive() {
     const node = this.shadowRoot.querySelector('#active'); if (!node || !this.adapter) return;
     node.replaceChildren();
-    if (this.config.display.active_scene) node.append(activeScenePanel(this.active, this.data?.presets || [], this._hass, this.timestamp, id => this.stop(id), this.adapter.getCapabilities().dynamicSceneStop, this.config.display.show_refresh, this.t));
+    if (this.config.display.active_scene) node.append(activeScenePanel(this.active, this.data?.presets || [], this._hass, this.timestamp, id => this.stop(id), this.adapter.getCapabilities().dynamicSceneStop, this.config.display.show_refresh, this.t, this.stopping));
   }
   renderGrid() {
     const node = this.shadowRoot.querySelector('#presets'); if (!node) return;
